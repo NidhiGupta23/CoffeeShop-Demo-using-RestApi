@@ -4,7 +4,7 @@ import json
 
 class consumeCoffeeApi:
     def __init__(self):
-        self.customerApi = "http://127.0.0.1:5000/customDetails"
+        self.customerApi = "http://127.0.0.1:5000/customerDetails"
         self.coffeeAp = "http://127.0.0.1:5000/coffeeDetails"
         
         
@@ -20,11 +20,11 @@ class consumeCoffeeApi:
         description = input('Descripton of the coffee : ') 
         price = input("Price of the coffee : ")
         coffeeDetail = req.post(self.coffeeAp, json = {'cName' : cName, 'description': description, 'price': price})
-        return coffeeDetail.text
+        return coffeeDetail.json()
 
     def getSpecificCoffeeDetail(self, id):
         coffeeDetail = req.get(self.coffeeAp + "/" + str(id))
-        return coffeeDetail.text
+        return coffeeDetail.json()
 
     def deleteCoffeeDetail(self, id):
         try:
@@ -41,11 +41,11 @@ class consumeCoffeeApi:
 
     def getCustomerDetails(self):
         customerDetails = req.get(self.customerApi)
-        return customerDetails.text
+        return customerDetails.json()
 
     def getSpecificCustomer(self, id):
         customerDetails = req.get(self.customerApi + "/" + str(id))
-        return customerDetails.text
+        return customerDetails.json()
 
     def postCustomerDetails(self):
         fname = input("Enter First Name and press enter : ")
@@ -54,11 +54,11 @@ class consumeCoffeeApi:
         pwd = input("Enter 8 digit Password and press enter : ")
         credit = float(input("Enter Credit and press enter : "))
         customerDetails = req.post(self.customerApi, json = {'fname': fname, 'lname': lname, 'email': email, 'pwd':pwd, 'credit': credit})
-        return customerDetails.text
+        return customerDetails.json()
 
     def putCustomerDetail(self, id, bill):
         customerDetails = self.getSpecificCustomer(id)
         
         credit = customerDetails.credit - bill
         response = req.post(self.customerApi, json = {'id': customerDetails.id, 'fname': customerDetails.fname, 'lname': customerDetails.lname, 'email': customerDetails.email, 'pwd': customerDetails.pwd, 'credit': credit})
-        return response.text
+        return response.json()

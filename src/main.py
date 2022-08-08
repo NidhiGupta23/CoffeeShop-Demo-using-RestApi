@@ -1,18 +1,17 @@
-from time import time
+import time
 import coffeeOrder as order
 
 
 if __name__ == "__main__":
     c1 = order.coffeeOrder()
-    #customer = c1.getCustomerDetails()
     c1.welcome_page()
-    # Add timer to sleep for 5 mseconds
+    time.sleep(5)
     print("\n \n")
     c1.viewMenu()
-    # Add timer to sleep for 5 mseconds
+    time.sleep(5)
     drink = input("Do you want to order coffee ? Press yes or no :   ")
     if drink == "yes":
-        c1.placeOrder()
+        c1.order()
     else:
         print("Have a great day!!!")
 

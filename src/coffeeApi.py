@@ -57,7 +57,6 @@ def get_customerDetails():
         output.append(details)    
     return {"Customers" : output}
 
-
 # Add new customer into the database
 @app.route('/customerDetails', methods=['POST'])
 def add_customerDetails():
@@ -92,7 +91,7 @@ def delete_customerDetail(id):
 @app.route('/customerDetails/<id>')
 def get_customDetail(id):
     customer = CustomersData.query.get_or_404(id)
-    return {'id': customer.id, 'fname': customer.fname, 'lname': customer.lname, 'email': customer.email, 'credit': customer.credit}
+    return {'id': customer.id, 'fname': customer.fname, 'lname': customer.lname, 'email': customer.email, 'pwd': customer.pwd, 'credit': customer.credit}
 
 ######################################################################################################################
                        ########## IMPLEMENTING REST API FOR PRODUCT COFFEE ##########
