@@ -3,9 +3,8 @@ import pprint as pp
 import pandas as pd
 import consumeCoffeeApi as consumer
 
-orderId = 1
-
 class coffeeOrder:
+
     def __init__(self):
         self.cs = consumer.consumeCoffeeApi()
         self.coffee =  self.cs.getCoffeeDetails()
@@ -75,6 +74,7 @@ class coffeeOrder:
 
 
     def order(self):
+        orderId = 1
         coffee = self.selectCoffee()
         coffeePrice = coffee.get('price')
         print("Its a great choice for a great day :) ")
@@ -92,17 +92,17 @@ class coffeeOrder:
             else:
                 print("Checking the credit...Kindly wait...")
                 [orderStatus, leftAmount] = self.placeOrder(loginId, coffeePrice) 
-                if orderStatus == True:
-                    print("Order placed !!! ")
-                    print("Order ID : ", orderId+1)
+                if orderStatus == True:                    
                     print("Remaining credits : ", leftAmount)
+                    orderId = orderId + 1
                 else:
                     print("Not enough credits : ", leftAmount)
                     exit
-
-        
-
+        return orderStatus    
 
 
-
-    
+    def take_order(self):
+        status = self.order()
+        if status == True:
+            print("Order placed !!! ")
+        return status
