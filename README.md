@@ -8,9 +8,9 @@ Performing CRUD operations using RESTAPI
    a). python -m venv .venv
    b). .venv\Scripts\activate
 4. Once virtual environment is activated, install
-   a). import flask
-   b). import flask_sqlalchemy
-   c). import pandas
+   a). pip install flask
+   b). pip install flask_sqlalchemy
+   c). pip install pandas
 5. Run flask -
    a). set FLASK_APP=coffeeApi.py
    b). flask run

@@ -54,11 +54,15 @@ class consumeCoffeeApi:
         pwd = input("Enter 8 digit Password and press enter : ")
         credit = float(input("Enter Credit and press enter : "))
         customerDetails = req.post(self.customerApi, json = {'fname': fname, 'lname': lname, 'email': email, 'pwd':pwd, 'credit': credit})
-        return customerDetails.json()
+        return customerDetails.text
 
-    def putCustomerDetail(self, id, bill):
-        customerDetails = self.getSpecificCustomer(id)
+    def putCustomerDetail(self, id, newCredit):
+        customerDetails = self.getSpecificCustomer(id)        
+        # credit = customerDetails.credit - bill
+        # 'id': customerDetails.id,
+        print("We got following details : ", customerDetails)
+        response = req.put(self.customerApi, json={'fname': customerDetails['fname'], 'lname': customerDetails['lname'], 'email': customerDetails['email'], 'pwd': customerDetails['pwd'], 'credit': newCredit})
         
-        credit = customerDetails.credit - bill
-        response = req.post(self.customerApi, json = {'id': customerDetails.id, 'fname': customerDetails.fname, 'lname': customerDetails.lname, 'email': customerDetails.email, 'pwd': customerDetails.pwd, 'credit': credit})
-        return response.json()
+        print("Checking if succeess...")       
+        
+        return response.text

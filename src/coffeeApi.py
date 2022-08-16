@@ -69,11 +69,12 @@ def add_customerDetails():
 @app.route('/customerDetails/<id>', methods=['PUT'])
 def update_customerDetail(id):
     customer = CustomersData.query.get(id)
-    customer.fname = request.json['fname']
-    customer.lname = request.json['lname']
-    customer.email = request.json['email']
-    customer.pwd = request.json['pwd']
-    customer.creddit = request.json['credit']
+    print("From coffeeApi file :   ", customer)
+    customer['fname'] = request.json['fname']
+    customer['lname'] = request.json['lname']
+    customer['email'] = request.json['email']
+    customer['pwd'] = request.json['pwd']
+    customer['credit'] = request.json['credit']
     db.session.commit()
     return {'id': customer.id, 'fname': customer.fname, 'lname': customer.lname, 'email': customer.email, 'credit': customer.credit}
 
