@@ -47,7 +47,7 @@ def index():
 ######################################################################################################################
                        ########## IMPLEMENTING REST API FOR PRODUCT CUSTOMER ##########
 
-# Get all customers details
+# Get all customers details - GET METHOD
 @app.route('/customerDetails', methods=['GET'])
 def get_customerDetails():
     customers = CustomersData.query.all()
@@ -57,7 +57,7 @@ def get_customerDetails():
         output.append(details)    
     return {"Customers" : output}
 
-# Add new customer into the database
+# Add new customer into the database - POST METHOD
 @app.route('/customerDetails', methods=['POST'])
 def add_customerDetails():
     customer = CustomersData(fname=request.json['fname'], lname=request.json['lname'], email=request.json['email'], pwd=request.json['pwd'], credit=request.json['credit'])
@@ -65,20 +65,29 @@ def add_customerDetails():
     db.session.commit()
     return {'id': customer.id}
 
-# update particular customer details
+# update particular customer details - PUT METHOD
 @app.route('/customerDetails/<id>', methods=['PUT'])
 def update_customerDetail(id):
     customer = CustomersData.query.get(id)
-    print("From coffeeApi file :   ", customer)
     customer['fname'] = request.json['fname']
     customer['lname'] = request.json['lname']
     customer['email'] = request.json['email']
     customer['pwd'] = request.json['pwd']
     customer['credit'] = request.json['credit']
     db.session.commit()
-    return {'id': customer.id, 'fname': customer.fname, 'lname': customer.lname, 'email': customer.email, 'credit': customer.credit}
+    return {'id': customer['id'], 'fname': customer['fname'], 'lname': customer['lname'], 'email': customer['email'], 'credit': customer['credit']}
 
-# delete a particular customer
+# since put method is not supported in html so we will convert it into POST method
+# update particular customer details - PUT METHOD
+@app.route('/customerDetails/update', methods=['POST'])
+def update_customerDetail():
+    customer = CustomersData(id=request.json['id'], fname=request.json['fname'], lname=request.json['lname'], email=request.json['email'], pwd=request.json['pwd'], credit=request.json['credit'])
+    db.session.add(customer)
+    db.session.commit()
+    return {'id': customer.id}
+
+
+# delete a particular customer - DELETE METHOD
 @app.route('/customerDetails/<id>', methods=['DELETE'])
 def delete_customerDetail(id):
     customer = CustomersData.query.get(id)    
@@ -97,7 +106,7 @@ def get_customDetail(id):
 ######################################################################################################################
                        ########## IMPLEMENTING REST API FOR PRODUCT COFFEE ##########
 
-# get all coffee details from the database
+# get all coffee details from the database - GET METHOD
 @app.route('/coffeeDetails', methods=['GET'])
 def get_coffeeDetails():
     coffeeD = CoffeeDetails.query.all()
@@ -107,7 +116,7 @@ def get_coffeeDetails():
         output.append(details)    
     return {"coffee" : output}
 
-# add coffee details into the database
+# add coffee details into the database - POST METHOD
 @app.route('/coffeeDetails', methods=['POST'])
 def add_coffeeDetails():
     coffeeD = CoffeeDetails(cName=request.json['cName'], description=request.json['description'], price=request.json['price'])
@@ -115,7 +124,7 @@ def add_coffeeDetails():
     db.session.commit()
     return {'id': coffeeD.id}
 
-# update the details of particular coffee
+# update the details of particular coffee - PUT METHOD
 @app.route('/coffeeDetails/<id>', methods=['PUT'])
 def update_coffeeDetail(id):
     coffeeD = CoffeeDetails.query.get(id)
@@ -125,7 +134,7 @@ def update_coffeeDetail(id):
     db.session.commit()
     return {'id': coffeeD.id, 'cName': coffeeD.cName, 'description': coffeeD.description, 'price': coffeeD.price}
 
-# delete a particular coffee
+# delete a particular coffee - DELETE METHOD
 @app.route('/coffeeDetails/<id>', methods=['DELETE'])
 def delete_coffeeDetail(id):
     coffeeD = CoffeeDetails.query.get(id)    

@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import requests  as req
 import json
 
@@ -6,7 +7,7 @@ class consumeCoffeeApi:
     def __init__(self):
         self.customerApi = "http://127.0.0.1:5000/customerDetails"
         self.coffeeAp = "http://127.0.0.1:5000/coffeeDetails"
-        
+        self.updatecustomerApi = "http://127.0.0.1:5000/customerDetails/update"
         
     ######################################################################################################################
                        ########## IMPLEMENTING FUNCTIONS TO CONSUME REST API FOR PRODUCT COFFEE ##########
@@ -28,8 +29,8 @@ class consumeCoffeeApi:
 
     def deleteCoffeeDetail(self, id):
         try:
-            coffeeDetail =  req.delete(self.coffeeAp + "/" + str(id))
-            return (coffeeDetail)
+            req.delete(self.coffeeAp + "/" + str(id))
+            return True
         except:
             return ("Error : Not Found")
 
@@ -56,13 +57,23 @@ class consumeCoffeeApi:
         customerDetails = req.post(self.customerApi, json = {'fname': fname, 'lname': lname, 'email': email, 'pwd':pwd, 'credit': credit})
         return customerDetails.text
 
+
     def putCustomerDetail(self, id, newCredit):
-        customerDetails = self.getSpecificCustomer(id)        
-        # credit = customerDetails.credit - bill
-        # 'id': customerDetails.id,
+        customerDetails = self.getSpecificCustomer(id + 1)
         print("We got following details : ", customerDetails)
-        response = req.put(self.customerApi, json={'fname': customerDetails['fname'], 'lname': customerDetails['lname'], 'email': customerDetails['email'], 'pwd': customerDetails['pwd'], 'credit': newCredit})
-        
-        print("Checking if succeess...")       
-        
-        return response.text
+        deletedcustomer = self.deleteCustomerDetail(id+1)
+        if deletedcustomer:
+            response = req.post(self.updatecustomerApi + "/" + str(id+1), json={'id': customerDetails['id'], 'fname': customerDetails['fname'], 'lname': customerDetails['lname'], 'email': customerDetails['email'], 'pwd': customerDetails['pwd'], 'credit': newCredit})
+            if response is not NULL:
+                return True
+        else:
+            return False
+       
+
+    # delete specific customer
+    def deleteCustomerDetail(self, id):
+        try:
+            req.delete(self.customerApi + "/" + str(id))
+            return True
+        except:
+            return ("Error : Not Found")
