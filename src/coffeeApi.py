@@ -65,6 +65,16 @@ def add_customerDetails():
     db.session.commit()
     return {'id': customer.id}
 
+# since put method is not supported in html so we will convert it into POST method
+# update particular customer details - PUT METHOD
+@app.route('/customerDetails/update', methods=['POST'])
+def update_customerDetails():
+    customer = CustomersData(id=request.json['id'], fname=request.json['fname'], lname=request.json['lname'], email=request.json['email'], pwd=request.json['pwd'], credit=request.json['credit'])
+    db.session.add(customer)
+    db.session.commit()
+    return {'id': customer.id}
+
+
 # update particular customer details - PUT METHOD
 @app.route('/customerDetails/<id>', methods=['PUT'])
 def update_customerDetail(id):
@@ -77,14 +87,6 @@ def update_customerDetail(id):
     db.session.commit()
     return {'id': customer['id'], 'fname': customer['fname'], 'lname': customer['lname'], 'email': customer['email'], 'credit': customer['credit']}
 
-# since put method is not supported in html so we will convert it into POST method
-# update particular customer details - PUT METHOD
-@app.route('/customerDetails/update', methods=['POST'])
-def update_customerDetail():
-    customer = CustomersData(id=request.json['id'], fname=request.json['fname'], lname=request.json['lname'], email=request.json['email'], pwd=request.json['pwd'], credit=request.json['credit'])
-    db.session.add(customer)
-    db.session.commit()
-    return {'id': customer.id}
 
 
 # delete a particular customer - DELETE METHOD

@@ -74,7 +74,7 @@ class coffeeOrder:
 
     # Check for customer authentication using password 
     def checkPwd(self, cid, cpwd):
-        scustomer = self.cs.getSpecificCustomer(cid)
+        scustomer = self.cs.getSpecificCustomer(cid + 1)
         status = False
         if cpwd == scustomer.get('pwd'):
                status = True
@@ -95,7 +95,7 @@ class coffeeOrder:
     def updateCredits(self, loginId, leftAmount):
         status = self.cs.putCustomerDetail(loginId, leftAmount)
         if status == True:
-             customerCredit = self.customer.get('Customers')[loginId].get('credit')
+             customerCredit = self.cs.getSpecificCustomer(loginId + 1).get('credit')
              print("Remaining Amount in balance: ", customerCredit)
         else:
             print("Something went wrong....")
@@ -117,17 +117,23 @@ class coffeeOrder:
             print("Wrong password : ")
             exit
         return orderStatus 
-    
+
+    # Create new user
+    def createAccount(self):
+        customer = self.cs.postCustomerDetails()
+        self.customer = self.cs.getCustomerDetails()
+        print("Your id is : ", customer)
+
     # select coffee and authenticate user
-    def order(self):
-        coffee = self.selectCoffee()
-        coffeePrice = coffee.get('price')
-        print("Its a great choice for a great day :) ")
+    def order(self):        
         signUp = input("Do you have an account?  Press yes or no and enter  ")
         if signUp == 'no':
             self.createAccount()
         print("Kindly login into your account :) ")
         [loginStatus, loginId] = self.login()
+        coffee = self.selectCoffee()
+        coffeePrice = coffee.get('price')
+        print("Its a great choice for a great day :) ")
         orderStatus = self.checkCredits(loginStatus, loginId, coffeePrice)
             
         return orderStatus    
@@ -138,10 +144,3 @@ class coffeeOrder:
         if status == True:
             print("Order placed !!! ")
         return status
-    
-    # Create new user
-    def createAccount(self):
-        customer = self.cs.postCustomerDetails()
-        print("Your id is : ", customer)
-           
-
