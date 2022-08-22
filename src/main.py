@@ -17,7 +17,7 @@ if __name__ == "__main__":
     c1.viewMenu()
     time.sleep(5)
     drink = input("Do you want to order coffee ? Press yes or no :   ")
-    while(drink != 'no'):
+    while(drink == 'yes'):
         status = c1.take_order()
         if status == True:
             if drink == "yes":

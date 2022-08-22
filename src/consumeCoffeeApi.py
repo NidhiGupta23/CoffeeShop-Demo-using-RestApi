@@ -61,13 +61,9 @@ class consumeCoffeeApi:
     def putCustomerDetail(self, id, newCredit):
         customerDetails = self.getSpecificCustomer(id + 1)
         deletedcustomer = self.deleteCustomerDetail(id+1)
-
         if deletedcustomer:
-            print("The customer has been deleted successffully")
-            print("detsils being added are as follows :  ", customerDetails['id'], customerDetails['fname'])
             response = req.post(self.updatecustomerApi, json={'id': customerDetails['id'], 'fname': customerDetails['fname'], 'lname': customerDetails['lname'], 'email': customerDetails['email'], 'pwd': customerDetails['pwd'], 'credit': newCredit})
             if response is not NULL:
-                print(response.text)
                 return True
         else:
             return False

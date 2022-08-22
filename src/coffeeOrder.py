@@ -33,9 +33,9 @@ class coffeeOrder:
         self.cs.getSpecificCoffeeDetail(id) 
 
     # select coffee type
-    def selectCoffee(self):
-        coffeeType = int(input("Have you choosed your desired coffee? If yes, press the id number :   "))
+    def selectCoffee(self):        
         try:
+            coffeeType = int(input("Have you choosed your desired coffee? If yes, press the id number :   "))
             print("You selected coffee")
             pp.pprint(self.coffee.get('coffee')[coffeeType-1].get('cName'))
             return self.coffee.get('coffee')[coffeeType-1]
@@ -43,6 +43,12 @@ class coffeeOrder:
             print("Sorry, wrong option choosed, try again...")
             exit
 
+    # Get coffee price
+    def coffeePrice(self):
+        coffee = self.selectCoffee()
+        cPrice = coffee.get('price')
+        print("Its a great choice for a great day :) ")
+        return cPrice
 
 ################################################## CUSTOMER VERIFICATION ######################################################
 
@@ -50,12 +56,12 @@ class coffeeOrder:
     def login(self):
         cemail = input("Enter email address :  ")
         loginId =  self.getCustomerID(cemail)
+        status=False
         if loginId == 0:
             print("Enter correct email ID")
             exit
         else:
             cpwd = input("Enter the password :  ")
-            print("Print the login ID : ", loginId)
             status = self.checkPwd(loginId, cpwd) 
         return [status, loginId]
 
@@ -63,12 +69,13 @@ class coffeeOrder:
     # Get the id of the customer using email provided
     def getCustomerID(self, cemail):
         cid = 0
-        for i in range(len(self.customer.get('Customers'))):
-            if cemail == self.customer.get('Customers')[i].get('email'):
-                cid = i
-                print("All details : ", self.customer.get('Customers')[cid])
-                break
-            
+        try:
+            for i in range(len(self.customer.get('Customers'))):
+                if cemail == self.customer.get('Customers')[i].get('email'):
+                    cid = i
+                    break            
+        except:
+            print("Not the correct Email ID entered")
         return cid
 
 
@@ -78,7 +85,9 @@ class coffeeOrder:
         status = False
         if cpwd == scustomer.get('pwd'):
                status = True
-
+        else:
+            print("Wrong password entered!!!")
+            exit
         return status
 
     # Get credit check and return status
@@ -120,22 +129,52 @@ class coffeeOrder:
 
     # Create new user
     def createAccount(self):
+        print("Create your account : \n \n")
         customer = self.cs.postCustomerDetails()
         self.customer = self.cs.getCustomerDetails()
         print("Your id is : ", customer)
 
+    # For users to login and check for credits
+    def logIn(self):
+        try:
+            print("Kindly login into your account :) ")
+            [loginStatus, loginId] = self.login()
+            if loginStatus == False:
+                print("Please check your user email/password and coffee Id")
+                exit
+            else:
+                coffeeprice = self.coffeePrice()
+                orderStatus = self.checkCredits(loginStatus, loginId, coffeeprice)
+                return orderStatus
+        except:
+            print("Please check your user email/password and coffee Id")
+            exit
+
+    # Check status of user signUp
+    def signUpStatus(self):
+        orderStatus = False
+        signUp = input("Have you created your account ? Press yes or no and enter  ")
+        if signUp == 'no':
+            self.createAccount()
+        elif signUp == 'yes':
+            orderStatus=self.logIn()
+        else:
+            print("Choose either yes or no !!!")
+            exit
+        return orderStatus
+
     # select coffee and authenticate user
-    def order(self):        
+    def order(self):   
+        orderStatus = False     
         signUp = input("Do you have an account?  Press yes or no and enter  ")
         if signUp == 'no':
             self.createAccount()
-        print("Kindly login into your account :) ")
-        [loginStatus, loginId] = self.login()
-        coffee = self.selectCoffee()
-        coffeePrice = coffee.get('price')
-        print("Its a great choice for a great day :) ")
-        orderStatus = self.checkCredits(loginStatus, loginId, coffeePrice)
-            
+            orderStatus=self.signUpStatus()
+        elif signUp == 'yes':            
+            orderStatus=self.logIn()
+        else:
+            print("Choose either yes or no !!!")
+            exit  
         return orderStatus    
 
     # Take coffee order from user
