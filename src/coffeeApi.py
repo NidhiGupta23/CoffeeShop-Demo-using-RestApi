@@ -35,6 +35,7 @@ class CustomersData(db.Model):
     email = db.Column(db.String(150), unique=True)
     pwd = db.Column(db.String(50))
     credit = db.Column(db.Float, nullable=False)
+    #orders = db.Column(db.Integer)
 
     def __repr__(self):
         return f'{self.fname}  {self.lname}  '

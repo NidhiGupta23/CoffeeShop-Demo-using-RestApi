@@ -45,7 +45,7 @@ class consumeCoffeeApi:
         return customerDetails.json()
 
     def getSpecificCustomer(self, id):
-        customerDetails = req.get(self.customerApi + "/" + str(id))
+        customerDetails = req.get(self.customerApi + "/" + str(id+1))
         return customerDetails.json()
 
     def postCustomerDetails(self):
@@ -58,13 +58,30 @@ class consumeCoffeeApi:
         return customerDetails.text
 
 
-    def putCustomerDetail(self, id, newCredit):
-        customerDetails = self.getSpecificCustomer(id + 1)
+    def putCustomerDetail(self, id, newCredit, activity):
+        customerDetails = self.getSpecificCustomer(id)
+        #print(customerDetails)
         deletedcustomer = self.deleteCustomerDetail(id+1)
+        #print(deletedcustomer)
         if deletedcustomer:
-            response = req.post(self.updatecustomerApi, json={'id': customerDetails['id'], 'fname': customerDetails['fname'], 'lname': customerDetails['lname'], 'email': customerDetails['email'], 'pwd': customerDetails['pwd'], 'credit': newCredit})
-            if response is not NULL:
-                return True
+            if activity == 1:
+                response = req.post(self.updatecustomerApi, json={'id': customerDetails['id'], 'fname': customerDetails['fname'], 'lname': customerDetails['lname'], 'email': customerDetails['email'], 'pwd': customerDetails['pwd'], 'credit': newCredit})
+                if response is not NULL:
+                    return True
+                else:
+                    return False
+            elif activity == 2:
+                response = req.post(self.updatecustomerApi, json={'id': customerDetails['id'], 'fname': customerDetails['fname'], 'lname': customerDetails['lname'], 'email': customerDetails['email'], 'pwd': customerDetails['pwd'], 'credit': customerDetails['credit'] + newCredit})
+                if response is not NULL:
+                    return True
+                else:
+                    return False
+            else:
+                response = req.post(self.updatecustomerApi, json={'id': customerDetails['id'], 'fname': customerDetails['fname'], 'lname': customerDetails['lname'], 'email': customerDetails['email'], 'pwd': customerDetails['pwd'], 'credit': customerDetails['credit']})
+                if response is not NULL:
+                    return True
+                else:
+                    return False
         else:
             return False
        

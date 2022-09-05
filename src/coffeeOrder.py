@@ -10,20 +10,7 @@ class coffeeOrder:
         self.cs = consumer.consumeCoffeeApi()
         self.coffee =  self.cs.getCoffeeDetails()
         self.customer = self.cs.getCustomerDetails()
-
-    # Display the coffee shop logo
-    def welcome_page(self):
-        print("########################################################################################################################")
-        print("########################################################################################################################")
-        print("                     ####  ####  #####  #####  #####  #####       ####  #  #  ####  ####  ")
-        print("                     #     #  #  #      #      #      #           #     #  #  #  #  #  #  ")
-        print("                     #     #  #  ###    ###    ###    ####        ####  ####  #  #  ####  ")
-        print("                     #     #  #  #      #      #      #              #  #  #  #  #  #     ")
-        print("                     ####  ####  #      #      #####  #####       ####  #  #  ####  #     ")
-        print("########################################################################################################################")
-        print("########################################################################################################################")
-
-   
+  
     # Display the coffee menu
     def viewMenu(self):
         print(pd.DataFrame(self.coffee.get('coffee')))
@@ -73,6 +60,7 @@ class coffeeOrder:
             for i in range(len(self.customer.get('Customers'))):
                 if cemail == self.customer.get('Customers')[i].get('email'):
                     cid = i
+                    #print("After getting the :  ") print( self.customer.get('Customers')[i])
                     break            
         except:
             print("Not the correct Email ID entered")
@@ -81,7 +69,7 @@ class coffeeOrder:
 
     # Check for customer authentication using password 
     def checkPwd(self, cid, cpwd):
-        scustomer = self.cs.getSpecificCustomer(cid + 1)
+        scustomer = self.cs.getSpecificCustomer(cid)
         status = False
         if cpwd == scustomer.get('pwd'):
                status = True
@@ -93,6 +81,7 @@ class coffeeOrder:
     # Get credit check and return status
     def placeOrder(self, loginId, coffeePrice):
         customerCredit = self.customer.get('Customers')[loginId].get('credit')
+        #print(customerCredit)
         status = False
         if customerCredit > coffeePrice:
             customerCredit = customerCredit - coffeePrice
@@ -102,9 +91,10 @@ class coffeeOrder:
 
     # Update user credits in database
     def updateCredits(self, loginId, leftAmount):
-        status = self.cs.putCustomerDetail(loginId, leftAmount)
+        #print("loginId, leftAmount", loginId, leftAmount)
+        status = self.cs.putCustomerDetail(loginId, leftAmount, 1)
         if status == True:
-             customerCredit = self.cs.getSpecificCustomer(loginId + 1).get('credit')
+             customerCredit = self.cs.getSpecificCustomer(loginId).get('credit')
              print("Remaining Amount in balance: ", customerCredit)
         else:
             print("Something went wrong....")
@@ -179,7 +169,42 @@ class coffeeOrder:
 
     # Take coffee order from user
     def take_order(self):
+        #self.customer = self.cs.getCustomerDetails()
         status = self.order()
         if status == True:
             print("Order placed !!! ")
         return status
+
+################################################## UPDATION MENU ######################################################
+    
+    def updateMenu(self):
+        print("Below are the options : ")
+        print("1. Update credit \n2. Update coffee price \n3. Update coffee description \n")
+        updateId = int(input("Choose option: "))
+        if updateId == 1 : 
+            print("Enter your login credentials and credit")
+            [loginStatus, loginId] = self.login()
+            if loginStatus == True:
+                newCredit = float(input("Enter new credit : "))
+                status = self.cs.putCustomerDetail(loginId, newCredit, 2)
+            else:
+                print("Please check your user email/password")
+                exit
+        elif updateId == 2 :
+            # add admin authentication
+            coffeeId = int(input("Enter the coffee Id : "))
+            newPrice = float(input("Enter new price : "))
+            status = self.updateCoffeeDetails(coffeeId, newPrice)
+        elif updateId == 3 :
+            coffeeId = int(input("Enter the coffee Id : "))
+            newDesp =  input("Enter new description : ")
+            status = self.updateCoffeeDetails(coffeeId, newDesp)
+        else:
+            print("Wrong option given...")
+        
+        if status == True:
+            print("Details were sucessfully updated...")
+        else:
+            print("Something went  wrong with updations")
+    
+
