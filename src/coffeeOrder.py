@@ -1,5 +1,3 @@
-import json
-import time
 import pprint as pp
 import pandas as pd
 import consumeCoffeeApi as consumer
@@ -179,7 +177,8 @@ class coffeeOrder:
     
     def updateMenu(self):
         print("Below are the options : ")
-        print("1. Update credit \n2. Update coffee price \n3. Update coffee description \n")
+        print("1. Update credit \n")
+        # 2. Update coffee price \n3. Update coffee description  (To implement)
         updateId = int(input("Choose option: "))
         if updateId == 1 : 
             print("Enter your login credentials and credit")

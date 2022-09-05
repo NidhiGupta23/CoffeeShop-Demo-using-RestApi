@@ -1,6 +1,5 @@
 from asyncio.windows_events import NULL
 import requests  as req
-import json
 
 
 class consumeCoffeeApi:
