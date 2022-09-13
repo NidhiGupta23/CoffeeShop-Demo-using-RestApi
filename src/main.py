@@ -32,10 +32,9 @@ if __name__ == "__main__":
         status = c1.take_order()
         if status == True:
             if drink == "yes":
-                print("Order ID : ", count_order() )          
+                print("Order ID : ", count_order())        
         else:
             print("Try again !!!")
-
         drink = input("Do you want to order coffee ? Press yes or no :   ")
         del c1
 

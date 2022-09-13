@@ -7,13 +7,16 @@
 # use postman for post and delete methods
 
 
+from datetime import datetime
+from email.policy import default
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../database/CoffeeData.db'
-app.config['SQLALCHEMY_BINDS'] = {'customer' : 'sqlite:///../database/CustomersData.db'}
+app.config['SQLALCHEMY_BINDS'] = {'customer' : 'sqlite:///../database/CustomersData.db' , 
+                                  'shop' : 'sqlite:///../database/ShopData.db' }
 
 db = SQLAlchemy(app)
 
@@ -27,6 +30,7 @@ class CoffeeDetails(db.Model):
     def __repr__(self):
         return f'{self.cName} - {self.description} - {self.price}'
         
+
 class CustomersData(db.Model):
     __bind_key__ = 'customer'
     id = db.Column(db.Integer, primary_key=True)
@@ -34,19 +38,33 @@ class CustomersData(db.Model):
     lname = db.Column(db.String(50))
     email = db.Column(db.String(150), unique=True)
     pwd = db.Column(db.String(50))
-    credit = db.Column(db.Float, nullable=False)
-    #orders = db.Column(db.Integer)
+    credit = db.Column(db.Float)
+    
+    def __repr__(self):
+        return f'{self.fname}  {self.lname}'
+
+
+class ShopData(db.Model):
+    __bind_key__ = 'shop'
+    bill = db.Column(db.Float, nullable=False)
+    email = db.Column(db.String(150))    
+    credit = db.Column(db.Float)
+    cName = db.Column(db.String(50))    
+    fname = db.Column(db.String(50))
+    cOrder = db.Column(db.Integer, nullable=False)
+    timeStamp = db.Column(db.DateTime, default=datetime.now().strftime('%Y-%m-%d'))
+    id = db.Column(db.Integer, primary_key=True)
 
     def __repr__(self):
-        return f'{self.fname}  {self.lname}  '
+        return f'{self.fname}  {self.credit}  {self.timeStamp}'
 
 # Starting page of the server
 @app.route('/')
 def index():
     return ('Welcome here to our coffee shop')
 
-######################################################################################################################
-                       ########## IMPLEMENTING REST API FOR PRODUCT CUSTOMER ##########
+#######################################################################################################################
+                     ########## IMPLEMENTING REST API FOR PRODUCT CUSTOMER ##########
 
 # Get all customers details - GET METHOD
 @app.route('/customerDetails', methods=['GET'])
@@ -88,8 +106,6 @@ def update_customerDetail(id):
     db.session.commit()
     return {'id': customer['id'], 'fname': customer['fname'], 'lname': customer['lname'], 'email': customer['email'], 'credit': customer['credit']}
 
-
-
 # delete a particular customer - DELETE METHOD
 @app.route('/customerDetails/<id>', methods=['DELETE'])
 def delete_customerDetail(id):
@@ -106,7 +122,7 @@ def get_customDetail(id):
     customer = CustomersData.query.get_or_404(id)
     return {'id': customer.id, 'fname': customer.fname, 'lname': customer.lname, 'email': customer.email, 'pwd': customer.pwd, 'credit': customer.credit}
 
-######################################################################################################################
+#######################################################################################################################
                        ########## IMPLEMENTING REST API FOR PRODUCT COFFEE ##########
 
 # get all coffee details from the database - GET METHOD
@@ -152,3 +168,41 @@ def delete_coffeeDetail(id):
 def get_coffeeDetail(id):
     coffeeD = CoffeeDetails.query.get_or_404(id)
     return {'id': coffeeD.id, 'cName': coffeeD.cName, 'description': coffeeD.description, 'price': coffeeD.price}
+
+
+#######################################################################################################################
+            ########## IMPLEMENTING REST API FOR SETTING AND GETTING CUSTOMERS DETAILS IN SHOP ##########
+
+# Get all events - GET METHOD
+@app.route('/shopDetails', methods=['GET'])
+def get_shopEvents():
+    shopData = ShopData.query.all()
+    output = []
+    for event in shopData:
+        details = {'id': event.id, 'timeStamp': event.timeStamp, 'fname': event.fname, 'email': event.email, 'credit': event.credit, 'bill': event.bill, 'cName': event.cName, 'cOrder': event.cOrder}
+        output.append(details)    
+    return {"ShopEvents" : output}
+
+# Add new event into the database - POST METHOD
+@app.route('/shopDetails', methods=['POST'])
+def add_shopEvent():
+    event = CustomersData(fname=request.json['fname'], email=request.json['email'], credit=request.json['credit'], bill=request.json['cPrice'], cName=request.json['cName'], cOrder=request.json['cOrder'])
+    db.session.add(event)
+    db.session.commit()
+    return {'id': event.id}
+
+# display specific event
+@app.route('/shopDetails/<id>')
+def get_specificEvent(id):
+    event = ShopData.query.get_or_404(id)
+    return {'id': event.id, 'timeStamp': event.timeStamp, 'fname': event.fname,  'credit': event.credit, 'bill': event.bill, 'cName': event.cName}
+
+# delete a particular event - DELETE METHOD
+@app.route('/shopDetails/<id>', methods=['DELETE'])
+def delete_specificEvent(id):
+    event = ShopData.query.get(id)    
+    if event is None:
+        return {'error': 'customer does not exists'}
+    db.session.delete(event)
+    db.session.commit()
+    return {'message': 'deletion successful'}

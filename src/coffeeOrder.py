@@ -1,5 +1,6 @@
 import pprint as pp
 import pandas as pd
+import datetime
 import consumeCoffeeApi as consumer
 
 class coffeeOrder:
@@ -8,6 +9,7 @@ class coffeeOrder:
         self.cs = consumer.consumeCoffeeApi()
         self.coffee =  self.cs.getCoffeeDetails()
         self.customer = self.cs.getCustomerDetails()
+        self.event = {}
   
     # Display the coffee menu
     def viewMenu(self):
@@ -22,7 +24,8 @@ class coffeeOrder:
         try:
             coffeeType = int(input("Have you choosed your desired coffee? If yes, press the id number :   "))
             print("You selected coffee")
-            pp.pprint(self.coffee.get('coffee')[coffeeType-1].get('cName'))
+            self.event['cName'] = self.coffee.get('coffee')[coffeeType-1].get('cName')
+            pp.pprint(self.event['cName'])
             return self.coffee.get('coffee')[coffeeType-1]
         except IndexError as ie:
             print("Sorry, wrong option choosed, try again...")
@@ -31,11 +34,11 @@ class coffeeOrder:
     # Get coffee price
     def coffeePrice(self):
         coffee = self.selectCoffee()
-        cPrice = coffee.get('price')
+        self.event['cPrice'] = coffee.get('price')
         print("Its a great choice for a great day :) ")
-        return cPrice
+        return self.event['cPrice']
 
-################################################## CUSTOMER VERIFICATION ######################################################
+############################################## CUSTOMER VERIFICATION ##################################################
 
     # For existing users to login
     def login(self):
@@ -71,18 +74,20 @@ class coffeeOrder:
         status = False
         if cpwd == scustomer.get('pwd'):
                status = True
+               self.event['email'] = scustomer.get('email')
+               self.event['fname'] = scustomer.get('fname')
         else:
             print("Wrong password entered!!!")
             exit
         return status
 
     # Get credit check and return status
-    def placeOrder(self, loginId, coffeePrice):
+    def placeOrder(self, loginId):
         customerCredit = self.customer.get('Customers')[loginId].get('credit')
         #print(customerCredit)
         status = False
-        if customerCredit > coffeePrice:
-            customerCredit = customerCredit - coffeePrice
+        if customerCredit > self.event['cPrice']:
+            customerCredit = customerCredit - self.event['cPrice']
             status = True
             
         return [status, customerCredit]
@@ -92,19 +97,19 @@ class coffeeOrder:
         #print("loginId, leftAmount", loginId, leftAmount)
         status = self.cs.putCustomerDetail(loginId, leftAmount, 1)
         if status == True:
-             customerCredit = self.cs.getSpecificCustomer(loginId).get('credit')
-             print("Remaining Amount in balance: ", customerCredit)
+             self.event['credit'] = self.cs.getSpecificCustomer(loginId).get('credit')
+             print("Remaining Amount in balance: ", self.event['credit'])
         else:
             print("Something went wrong....")
             exit
     
 
     # Check credits of user for placing order for coffee
-    def checkCredits(self, loginStatus, loginId, coffeePrice):
+    def checkCredits(self, loginStatus, loginId):
         orderStatus = False
         if loginStatus == True:
             print("Checking the credit...Kindly wait...")
-            [orderStatus, leftAmount] = self.placeOrder(loginId, coffeePrice) 
+            [orderStatus, leftAmount] = self.placeOrder(loginId) 
             if orderStatus == True:       
                 self.updateCredits(loginId, leftAmount)
             else:
@@ -131,8 +136,8 @@ class coffeeOrder:
                 print("Please check your user email/password and coffee Id")
                 exit
             else:
-                coffeeprice = self.coffeePrice()
-                orderStatus = self.checkCredits(loginStatus, loginId, coffeeprice)
+                self.event['cPrice'] = self.coffeePrice()
+                orderStatus = self.checkCredits(loginStatus, loginId)
                 return orderStatus
         except:
             print("Please check your user email/password and coffee Id")
@@ -170,6 +175,8 @@ class coffeeOrder:
         #self.customer = self.cs.getCustomerDetails()
         status = self.order()
         if status == True:
+            self.event['cOrder'] = 1
+            self.manageEvents()
             print("Order placed !!! ")
         return status
 
@@ -206,4 +213,9 @@ class coffeeOrder:
         else:
             print("Something went  wrong with updations")
     
+#######################################################################################################################
 
+    def manageEvents(self):
+        self.cs.postEventDetails(self.event)
+        print(self.event)
+       

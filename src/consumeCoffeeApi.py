@@ -1,4 +1,6 @@
 from asyncio.windows_events import NULL
+from sqlite3 import Timestamp
+from tkinter import E
 import requests  as req
 
 
@@ -7,6 +9,7 @@ class consumeCoffeeApi:
         self.customerApi = "http://127.0.0.1:5000/customerDetails"
         self.coffeeAp = "http://127.0.0.1:5000/coffeeDetails"
         self.updatecustomerApi = "http://127.0.0.1:5000/customerDetails/update"
+        self.shopApi = "http://127.0.0.1:5000/shopDetails"
         
     ######################################################################################################################
                        ########## IMPLEMENTING FUNCTIONS TO CONSUME REST API FOR PRODUCT COFFEE ##########
@@ -89,6 +92,30 @@ class consumeCoffeeApi:
     def deleteCustomerDetail(self, id):
         try:
             req.delete(self.customerApi + "/" + str(id))
+            return True
+        except:
+            return ("Error : Not Found")
+
+
+######################################################################################################################
+  ########## IMPLEMENTING FUNCTIONS TO CONSUME REST API FOR SETTING AND GETTING CUSTOMERS DETAILS IN SHOP ##########
+
+    def getEventsDetails(self):
+        eventDetails = req.get(self.shopApi)
+        return eventDetails.json()
+
+    def getSpecificEvent(self, id):
+        eventDetails = req.get(self.shopApi + "/" + str(id+1))
+        return eventDetails.json()
+
+    def postEventDetails(self, details):
+        eventDetails = req.post(self.shopApi, json = {'fname': details['fname'], 'email': details['email'], 'credit': details['credit'], 'bill': details['cPrice'], 'cName': details['cName'], 'cOrder': details['cOrder'] })
+        return eventDetails.text
+
+    # delete specific event
+    def deleteEventDetail(self, id):
+        try:
+            req.delete(self.shopApi + "/" + str(id))
             return True
         except:
             return ("Error : Not Found")
