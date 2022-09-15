@@ -36,54 +36,56 @@ class coffeeOrder:
         coffee = self.selectCoffee()
         self.event['cPrice'] = coffee.get('price')
         print("Its a great choice for a great day :) ")
-        return self.event['cPrice']
 
 ############################################## CUSTOMER VERIFICATION ##################################################
 
     # For existing users to login
     def login(self):
         cemail = input("Enter email address :  ")
-        loginId =  self.getCustomerID(cemail)
+        self.getCustomerIndex(cemail)
         status=False
-        if loginId == 0:
+        if self.event['cusId'] == 0:
             print("Enter correct email ID")
             exit
         else:
             cpwd = input("Enter the password :  ")
-            status = self.checkPwd(loginId, cpwd) 
-        return [status, loginId]
+            status = self.checkPwd(cpwd) 
+            print("Status after checking pwd  ",status)
+        print("Status after else  ",status)
+        return status
 
 
     # Get the id of the customer using email provided
-    def getCustomerID(self, cemail):
-        cid = 0
+    def getCustomerIndex(self, cemail):
         try:
-            for i in range(len(self.customer.get('Customers'))):
-                if cemail == self.customer.get('Customers')[i].get('email'):
-                    cid = i
-                    #print("After getting the :  ") print( self.customer.get('Customers')[i])
+            for index in range(len(self.customer.get('Customers'))):
+                if cemail == self.customer.get('Customers')[index].get('email'):
+                    print("After getting the :  ", index) 
+                    print( self.customer.get('Customers')[index])
+                    self.event['cusIndex'] = index
+                    self.event['cusId'] = self.customer.get('Customers')[index].get('id')
                     break            
         except:
             print("Not the correct Email ID entered")
-        return cid
-
 
     # Check for customer authentication using password 
-    def checkPwd(self, cid, cpwd):
-        scustomer = self.cs.getSpecificCustomer(cid)
+    def checkPwd(self, cpwd):
+        scustomer = self.cs.getSpecificCustomer(self.event['cusId'])
+        print("After getting the pwd :  ", scustomer)
         status = False
         if cpwd == scustomer.get('pwd'):
-               status = True
-               self.event['email'] = scustomer.get('email')
-               self.event['fname'] = scustomer.get('fname')
+            print("yes, pwd is correct")
+            status = True
+            self.event['email'] = scustomer.get('email')
+            self.event['fname'] = scustomer.get('fname')
         else:
             print("Wrong password entered!!!")
             exit
         return status
 
     # Get credit check and return status
-    def placeOrder(self, loginId):
-        customerCredit = self.customer.get('Customers')[loginId].get('credit')
+    def placeOrder(self):
+        customerCredit = self.cs.getSpecificCustomer(self.event['cusId']).get('credit')
         #print(customerCredit)
         status = False
         if customerCredit > self.event['cPrice']:
@@ -93,11 +95,11 @@ class coffeeOrder:
         return [status, customerCredit]
 
     # Update user credits in database
-    def updateCredits(self, loginId, leftAmount):
-        #print("loginId, leftAmount", loginId, leftAmount)
-        status = self.cs.putCustomerDetail(loginId, leftAmount, 1)
+    def updateCredits(self, leftAmount):
+        print("leftAmount", leftAmount)
+        status = self.cs.putCustomerDetail(self.event['cusId'], leftAmount, 1)
         if status == True:
-             self.event['credit'] = self.cs.getSpecificCustomer(loginId).get('credit')
+             self.event['credit'] = self.cs.getSpecificCustomer(self.event['cusId']).get('credit')
              print("Remaining Amount in balance: ", self.event['credit'])
         else:
             print("Something went wrong....")
@@ -105,19 +107,16 @@ class coffeeOrder:
     
 
     # Check credits of user for placing order for coffee
-    def checkCredits(self, loginStatus, loginId):
+    def checkCredits(self):
         orderStatus = False
-        if loginStatus == True:
-            print("Checking the credit...Kindly wait...")
-            [orderStatus, leftAmount] = self.placeOrder(loginId) 
-            if orderStatus == True:       
-                self.updateCredits(loginId, leftAmount)
-            else:
-                print("Not enough credits : ", leftAmount)
-                exit
+        print("Checking the credit...Kindly wait...")
+        [orderStatus, leftAmount] = self.placeOrder() 
+        if orderStatus == True:       
+            self.updateCredits(leftAmount)
         else:
-            print("Wrong password : ")
+            print("Not enough credits : ", leftAmount)
             exit
+        
         return orderStatus 
 
     # Create new user
@@ -131,13 +130,13 @@ class coffeeOrder:
     def logIn(self):
         try:
             print("Kindly login into your account :) ")
-            [loginStatus, loginId] = self.login()
+            loginStatus = self.login()
             if loginStatus == False:
                 print("Please check your user email/password and coffee Id")
                 exit
             else:
-                self.event['cPrice'] = self.coffeePrice()
-                orderStatus = self.checkCredits(loginStatus, loginId)
+                self.coffeePrice()
+                orderStatus = self.checkCredits()
                 return orderStatus
         except:
             print("Please check your user email/password and coffee Id")

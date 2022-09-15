@@ -52,7 +52,8 @@ class ShopData(db.Model):
     cName = db.Column(db.String(50))    
     fname = db.Column(db.String(50))
     cOrder = db.Column(db.Integer, nullable=False)
-    timeStamp = db.Column(db.DateTime, default=datetime.now().strftime('%Y-%m-%d'))
+    timeStamp = db.Column(db.String, nullable=False)
+    #DateTime, default=datetime.now().strftime('%Y-%m-%d'))
     id = db.Column(db.Integer, primary_key=True)
 
     def __repr__(self):
@@ -186,7 +187,7 @@ def get_shopEvents():
 # Add new event into the database - POST METHOD
 @app.route('/shopDetails', methods=['POST'])
 def add_shopEvent():
-    event = CustomersData(fname=request.json['fname'], email=request.json['email'], credit=request.json['credit'], bill=request.json['cPrice'], cName=request.json['cName'], cOrder=request.json['cOrder'])
+    event = ShopData(fname=request.json['fname'], email=request.json['email'], credit=request.json['credit'], bill=request.json['bill'], cName=request.json['cName'], cOrder=request.json['cOrder'], timeStamp=str(datetime.now().strftime('%Y-%m-%d')))
     db.session.add(event)
     db.session.commit()
     return {'id': event.id}
@@ -206,3 +207,14 @@ def delete_specificEvent(id):
     db.session.delete(event)
     db.session.commit()
     return {'message': 'deletion successful'}
+
+
+# Testing Api - GET METHOD
+@app.route('/shopDetail', methods=['GET'])
+def get_shopEvent():
+    shopData = ShopData.query.all()
+    output = []
+    for event in shopData:
+        details = {'id': event.id, 'email': event.email, 'credit': event.credit, 'cOrder': event.cOrder}
+        output.append(details)    
+    return {"ShopEvents" : output}

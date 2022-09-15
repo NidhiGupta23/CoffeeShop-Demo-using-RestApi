@@ -47,7 +47,7 @@ class consumeCoffeeApi:
         return customerDetails.json()
 
     def getSpecificCustomer(self, id):
-        customerDetails = req.get(self.customerApi + "/" + str(id+1))
+        customerDetails = req.get(self.customerApi + "/" + str(id))
         return customerDetails.json()
 
     def postCustomerDetails(self):
@@ -63,7 +63,7 @@ class consumeCoffeeApi:
     def putCustomerDetail(self, id, newCredit, activity):
         customerDetails = self.getSpecificCustomer(id)
         #print(customerDetails)
-        deletedcustomer = self.deleteCustomerDetail(id+1)
+        deletedcustomer = self.deleteCustomerDetail(id)
         #print(deletedcustomer)
         if deletedcustomer:
             if activity == 1:
@@ -110,6 +110,7 @@ class consumeCoffeeApi:
 
     def postEventDetails(self, details):
         eventDetails = req.post(self.shopApi, json = {'fname': details['fname'], 'email': details['email'], 'credit': details['credit'], 'bill': details['cPrice'], 'cName': details['cName'], 'cOrder': details['cOrder'] })
+        print(eventDetails.text)
         return eventDetails.text
 
     # delete specific event
