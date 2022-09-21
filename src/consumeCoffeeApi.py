@@ -1,6 +1,4 @@
 from asyncio.windows_events import NULL
-from sqlite3 import Timestamp
-from tkinter import E
 import requests  as req
 
 
@@ -57,7 +55,7 @@ class consumeCoffeeApi:
         pwd = input("Enter 8 digit Password and press enter : ")
         credit = float(input("Enter Credit and press enter : "))
         customerDetails = req.post(self.customerApi, json = {'fname': fname, 'lname': lname, 'email': email, 'pwd':pwd, 'credit': credit})
-        return customerDetails.text
+        return customerDetails.json()
 
 
     def putCustomerDetail(self, id, newCredit, activity):
@@ -110,7 +108,7 @@ class consumeCoffeeApi:
 
     def postEventDetails(self, details):
         eventDetails = req.post(self.shopApi, json = {'fname': details['fname'], 'email': details['email'], 'credit': details['credit'], 'bill': details['cPrice'], 'cName': details['cName'], 'cOrder': details['cOrder'] })
-        print(eventDetails.text)
+        #print(eventDetails.text)
         return eventDetails.text
 
     # delete specific event
