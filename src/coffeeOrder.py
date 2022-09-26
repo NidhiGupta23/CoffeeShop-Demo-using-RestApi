@@ -1,8 +1,7 @@
-from distutils.log import error
-import pprint as pp
 import time
 import pandas as pd
 import consumeCoffeeApi as consumer
+import plottinGraphs as pg
 
 class coffeeOrder:
 
@@ -10,11 +9,17 @@ class coffeeOrder:
         self.cs = consumer.consumeCoffeeApi()
         self.coffee =  self.cs.getCoffeeDetails()
         self.customer = self.cs.getCustomerDetails()
+        self.plotGraph = pg.plottinGraphs()
         self.event = {}
   
     # Display the coffee menu
     def viewCoffeeMenu(self):
-        print(pd.DataFrame(self.coffee.get('coffee')))
+        coffeeList = self.coffee.get('coffee')
+        df = pd.DataFrame(columns=['id', 'cName', 'description', 'price'])
+        for i in range(0, len(coffeeList)):
+            df.loc[i] = [coffeeList[i]['id'], coffeeList[i]['cName'], coffeeList[i]['description'], coffeeList[i]['price']]
+        df.rename(columns = {'cName':'CoffeeName', 'description':'Description', 'id':'ID', 'price':'Price'}, inplace = True)
+        print('\n\n',df.set_index('ID'))
 
     # Display specific coffee
     def viewSpecificCoffee(self, id):
@@ -28,7 +33,7 @@ class coffeeOrder:
             self.event['cName'] = self.coffee.get('coffee')[coffeeType-1].get('cName')
             print("\nYou selected coffee", self.event['cName'])
             return self.coffee.get('coffee')[coffeeType-1]
-        except IndexError as ie:
+        except IndexError:
             print("Sorry, wrong option choosed, try again...")
             exit
 
@@ -177,49 +182,8 @@ class coffeeOrder:
             self.viewCredits()
         return status
 
-################################################## UPDATION MENU ######################################################
-    
-    def updateMenu(self):
-        print("Below are the options : ")
-        print("1. Update credit \n")
-        # 2. Update coffee price \n3. Update coffee description  (To implement)
-        status=False
-        try:                
-            updateId = int(input("Choose option: "))
-            if updateId == 1 : 
-                print("Enter your login credentials and credit")
-                loginStatus = self.login()
-                if loginStatus == True:
-                    newCredit = float(input("Enter new credit : "))
-                    status = self.cs.putCustomerDetail(self.event['cusId'], newCredit, 2)
-                else:
-                    print("Please check your user email/password")
-                    exit
-            elif updateId == 2 :
-                # add admin authentication
-                coffeeId = int(input("Enter the coffee Id : "))
-                newPrice = float(input("Enter new price : "))
-                status = self.updateCoffeeDetails(coffeeId, newPrice)
-            elif updateId == 3 :
-                coffeeId = int(input("Enter the coffee Id : "))
-                newDesp =  input("Enter new description : ")
-                status = self.updateCoffeeDetails(coffeeId, newDesp)
-            else:
-                print("Wrong option given...")
-        
-            if status == True:
-                print("Details were sucessfully updated...")
-            else:
-                print("Something went wrong with updations")
-        except TypeError:
-            print("Enter the correct email address..")
-            exit()
-        except ValueError:
-            print("Systems only take numbers... ")
-        except error:
-            print(error)
-    
-#######################################################################################################################
+      
+    #######################################################################################################################
 
     def manageEvents(self):
         self.cs.postEventDetails(self.event)
@@ -246,10 +210,11 @@ class coffeeOrder:
         print("4. View account details")
         print("5. Modify account details")
         print("6. Delete account")
-        print("7. Exit from the application")
+        print("7. View Coffee of the month")
         print("8. Give feedback and rating")
+        print("9. Admin")
         try:
-            option = int(input("\nKindly choose one of the options from above and press Enter to continue  "))
+            option = input("\nKindly choose one of the options from above and press Enter to continue  ")
         except ValueError:
             print("Kinly insert only integers")
             try:
@@ -262,33 +227,36 @@ class coffeeOrder:
             return option
 
     def actionToPerforme(self, option):
-        if option == 1:
+        if option == '1':
             print("\nKindly enter following details to create your account: \n")
             status = self.actionPerform1()
-        elif option == 2:
+        elif option == '2':
             print("\nWe are ready to take you coffee order that will make your day extra special :) \n")
             status = self.actionPerform2() 
-        elif option == 3:
+        elif option == '3':
             print("\nWelcome back to add amount in your wallet!!!\n")
             status = self.actionPerform3()
-        elif option == 4:
+        elif option == '4':
             print("\nLogin to see your account details!!!\n")
             status = self.actionPerform4()
-        elif option == 5:
+        elif option == '5':
             pass
-        elif option == 6:
+        elif option == '6':
             print("\nLogin to delete your account\n")
             status = self.actionPerform6()
-        elif option == 7:
+        elif option == '7':
+            print("\nIt is wise to view and coffee of the month ")
+            self.plotGraph.viewPopularCoffee('CoffeeName', 'CoffeeOrder')            
+        #TODO
+        elif option == '8':
+            print("Feature yet to be implemented")
+            status = True    
+        elif  option == '9':
+            print("Login with your credentials")
+            status = self.actionPerform9()      
+        else:
             print("\n\nWe are sad to see you go... Hope you will choose us again for a great cup of coffee")
             exit()
-        #TODO
-        elif option == 8:
-            print("Feature yet to be implemented")
-            status = 'SUCCESS'            
-        else:
-            print('\nNot a valid choice!!!\nKindly choose from options above')
-            status = 'FAIL'
         return status
         
 
@@ -354,3 +322,47 @@ class coffeeOrder:
             print("Wrong email or password.")
             status = False
         return status
+
+    def actionPerform9(self):
+        status = False
+        adminUser = input("Enter Admin user name: ")
+        adminPwd = input("Enter Admin password: ")
+        if adminUser == 'AdminUser123' and adminPwd == 'AdminPwd123':
+            print('\nHello, Admin. \nChoose the services you want to perform')
+            self.subActionPerform9()
+        else:
+            print("Invalid user name or password. Try again")
+
+   
+    def subActionPerform9(self):
+        choice = True
+        while choice==True:
+            print("\nFollowing are the services that you can see")
+            print("1. View customer vs credit graph")
+            print("2. View customer vs coffee ordered graph")
+            print("3. Modify coffee prices")
+            print("4. Modify coffee description")
+            print('5. Add new item in menu')
+            print('6. Exit sub menu')
+            adminOption = input('Choose an option from top')
+            if adminOption == '1':
+                print("Graph of customers vs credit in their account")
+                self.plotGraph.viewCustomer('MailID', 'Credit')
+            elif adminOption == '2':
+                print("Graph of customers vs no. of coffees ordered")
+                self.plotGraph.viewCustomer('MailID', 'CoffeeOrder')
+            elif adminOption == '3':
+                print("Enter details to update coffee prices")
+                coffeeId = int(input("Enter the coffee Id : "))
+                newPrice = float(input("Enter new price : "))
+                status = self.updateCoffeeDetails(coffeeId, newPrice)
+            elif adminOption == '4':
+                print("Enter details to update coffee description")
+                coffeeId = int(input("Enter the coffee Id : "))
+                newDesp =  input("Enter new description : ")
+                status = self.updateCoffeeDetails(coffeeId, newDesp)
+            elif adminOption == '5':
+                print("Want to add something new ")
+            else:
+                break
+            choice = input('Do you still want to perform any operation')

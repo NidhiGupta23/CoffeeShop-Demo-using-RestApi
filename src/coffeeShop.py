@@ -27,6 +27,8 @@ def chooseOption():
     else:
         option = False
     return option
+
+
 if __name__ == "__main__":
     welcome_page()
     time.sleep(2)
@@ -37,9 +39,9 @@ if __name__ == "__main__":
     while(option == True):
         c1 = order.coffeeOrder()
         service = c1.viewMainMenu()
-        if service != 0 and service <= 8:
+        if int(service) != 0 and int(service) <= 9:
             completed = c1.actionToPerforme(service)
-            if service == 2 and completed == True:
+            if int(service) == 2 and completed == True:
                 print("\nOrder ID : ", count_order()) 
             elif completed == True:
                 print("Have a good day :) ")
