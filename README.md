@@ -5,8 +5,8 @@ Performing CRUD operations using RESTAPI
 1. Install python 3.10
 2. Open command prompt and go to src
 3. Create and activate virtual environment - 
-   a). python -m venv .venv
-   b). .venv\Scripts\activate
+   python -m venv .venv
+   .venv\Scripts\activate
 4. Once virtual environment is activated, install
    a). pip install flask
    b). pip install flask_sqlalchemy
