@@ -1,5 +1,6 @@
 from asyncio.windows_events import NULL
 import requests  as req
+from random import randrange
 
 
 class consumeCoffeeApi:
@@ -20,7 +21,7 @@ class consumeCoffeeApi:
         cName = input('Coffee name : ')
         description = input('Descripton of the coffee : ') 
         price = input("Price of the coffee : ")
-        coffeeDetail = req.post(self.coffeeAp, json = {'cName' : cName, 'description': description, 'price': price})
+        coffeeDetail = req.post(self.coffeeAp, json = {'COFFEE_NAME' : cName, 'COFFEE_DESCRIPTION': description, 'COFFEE_PRICE': price})
         return coffeeDetail.json()
 
     def getSpecificCoffeeDetail(self, id):
@@ -54,7 +55,8 @@ class consumeCoffeeApi:
         email = input("Enter EMail and press enter : ")
         pwd = input("Enter 8 digit Password and press enter : ")
         credit = float(input("Enter Credit and press enter : "))
-        customerDetails = req.post(self.customerApi, json = {'fname': fname, 'lname': lname, 'email': email, 'pwd':pwd, 'credit': credit})
+        customer_id = randrange(000000, 999999)
+        customerDetails = req.post(self.customerApi, json = {'CUSTOMER_ID':customer_id,'FIRST_NAME': fname, 'LAST_NAME': lname, 'CUSTOMER_EMAIL': email, 'PWD':pwd, 'CREDIT': credit})
         return customerDetails.json()
 
 
@@ -65,19 +67,19 @@ class consumeCoffeeApi:
         #print(deletedcustomer)
         if deletedcustomer:
             if activity == 1:
-                response = req.post(self.updatecustomerApi, json={'id': customerDetails['id'], 'fname': customerDetails['fname'], 'lname': customerDetails['lname'], 'email': customerDetails['email'], 'pwd': customerDetails['pwd'], 'credit': newCredit})
+                response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': newCredit})
                 if response is not NULL:
                     return True
                 else:
                     return False
             elif activity == 2:
-                response = req.post(self.updatecustomerApi, json={'id': customerDetails['id'], 'fname': customerDetails['fname'], 'lname': customerDetails['lname'], 'email': customerDetails['email'], 'pwd': customerDetails['pwd'], 'credit': customerDetails['credit'] + newCredit})
+                response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': customerDetails['CREDIT'] + newCredit})
                 if response is not NULL:
                     return True
                 else:
                     return False
             else:
-                response = req.post(self.updatecustomerApi, json={'id': customerDetails['id'], 'fname': customerDetails['fname'], 'lname': customerDetails['lname'], 'email': customerDetails['email'], 'pwd': customerDetails['pwd'], 'credit': customerDetails['credit']})
+                response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': customerDetails['CREDIT']})
                 if response is not NULL:
                     return True
                 else:
@@ -107,7 +109,7 @@ class consumeCoffeeApi:
         return eventDetails.json()
 
     def postEventDetails(self, details):
-        eventDetails = req.post(self.shopApi, json = {'fname': details['fname'], 'email': details['email'], 'credit': details['credit'], 'bill': details['cPrice'], 'cName': details['cName'], 'cOrder': details['cOrder'] })
+        eventDetails = req.post(self.shopApi, json = {'FIRST_NAME': details['FIRST_NAME'], 'CUSTOMER_EMAIL': details['CUSTOMER_EMAIL'], 'CREDIT': details['CREDIT'], 'BILL': details['COFFEE_PRICE'], 'COFFEE_NAME': details['COFFEE_NAME'], 'CUSTOMER_ID': details['CUSTOMER_ID'] })
         #print(eventDetails.text)
         return eventDetails.text
 

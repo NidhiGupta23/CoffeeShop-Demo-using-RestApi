@@ -1,7 +1,8 @@
+from distutils.log import error
 import time
 import pandas as pd
 import consumeCoffeeApi as consumer
-import plottinGraphs as pg
+#import plottinGraphs as pg
 
 class coffeeOrder:
 
@@ -9,17 +10,16 @@ class coffeeOrder:
         self.cs = consumer.consumeCoffeeApi()
         self.coffee =  self.cs.getCoffeeDetails()
         self.customer = self.cs.getCustomerDetails()
-        self.plotGraph = pg.plottinGraphs()
+        #self.plotGraph = pg.plottinGraphs()
         self.event = {}
   
     # Display the coffee menu
     def viewCoffeeMenu(self):
         coffeeList = self.coffee.get('coffee')
-        df = pd.DataFrame(columns=['id', 'cName', 'description', 'price'])
+        df = pd.DataFrame(columns=['COFFEE_ID', 'COFFEE_NAME', 'COFFEE_DESCRIPTION', 'COFFEE_PRICE'])
         for i in range(0, len(coffeeList)):
-            df.loc[i] = [coffeeList[i]['id'], coffeeList[i]['cName'], coffeeList[i]['description'], coffeeList[i]['price']]
-        df.rename(columns = {'cName':'CoffeeName', 'description':'Description', 'id':'ID', 'price':'Price'}, inplace = True)
-        print('\n\n',df.set_index('ID'))
+            df.loc[i] = [coffeeList[i]['COFFEE_ID'], coffeeList[i]['COFFEE_NAME'], coffeeList[i]['COFFEE_DESCRIPTION'], coffeeList[i]['COFFEE_PRICE']]
+        print('\n\n',df.set_index('COFFEE_ID'))
 
     # Display specific coffee
     def viewSpecificCoffee(self, id):
@@ -30,8 +30,8 @@ class coffeeOrder:
         try:
             coffeeType = int(input("\nHave you choosed your desired coffee? If yes, press the id number :   "))
             #print("You selected coffee")
-            self.event['cName'] = self.coffee.get('coffee')[coffeeType-1].get('cName')
-            print("\nYou selected coffee", self.event['cName'])
+            self.event['COFFEE_NAME'] = self.coffee.get('coffee')[coffeeType-1].get('COFFEE_NAME')
+            print("\nYou selected coffee", self.event['COFFEE_NAME'])
             return self.coffee.get('coffee')[coffeeType-1]
         except IndexError:
             print("Sorry, wrong option choosed, try again...")
@@ -40,7 +40,7 @@ class coffeeOrder:
     # Get coffee price
     def coffeePrice(self):
         coffee = self.selectCoffee()
-        self.event['cPrice'] = coffee.get('price')
+        self.event['COFFEE_PRICE'] = coffee.get('COFFEE_PRICE')
         print("Its a great choice for a great day :) ")
 
 ############################################## CUSTOMER VERIFICATION ##################################################
@@ -50,7 +50,7 @@ class coffeeOrder:
         cemail = input("Enter email address :  ")
         self.getCustomerIndex(cemail)
         status=False
-        if self.event['cusId'] == 0:
+        if self.event['CUSTOMER_ID'] == 0:
             print("Enter correct email ID")
             exit
         else:
@@ -64,24 +64,24 @@ class coffeeOrder:
     def getCustomerIndex(self, cemail):
         try:
             for index in range(len(self.customer.get('Customers'))):
-                if cemail == self.customer.get('Customers')[index].get('email'):
+                if cemail == self.customer.get('Customers')[index].get('CUSTOMER_EMAIL'):
                     '''print("After getting the :  ", index) 
                     print( self.customer.get('Customers')[index])'''
                     self.event['cusIndex'] = index
-                    self.event['cusId'] = self.customer.get('Customers')[index].get('id')
+                    self.event['CUSTOMER_ID'] = self.customer.get('Customers')[index].get('CUSTOMER_ID')
                     break            
         except:
             print("Not the correct Email ID entered")
 
     # Check for customer authentication using password 
     def checkPwd(self, cpwd):
-        scustomer = self.cs.getSpecificCustomer(self.event['cusId'])
+        scustomer = self.cs.getSpecificCustomer(self.event['CUSTOMER_ID'])
         #print("After getting the pwd :  ", scustomer)
         status = False
-        if cpwd == scustomer.get('pwd'):
+        if cpwd == scustomer.get('PWD'):
             status = True
-            self.event['email'] = scustomer.get('email')
-            self.event['fname'] = scustomer.get('fname')
+            self.event['CUSTOMER_EMAIL'] = scustomer.get('CUSTOMER_EMAIL')
+            self.event['FIRST_NAME'] = scustomer.get('FIRST_NAME')
         else:
             print("Wrong password entered!!!")
             exit
@@ -89,11 +89,11 @@ class coffeeOrder:
 
     # Get credit check and return status
     def placeOrder(self):
-        customerCredit = self.cs.getSpecificCustomer(self.event['cusId']).get('credit')
+        customerCredit = self.cs.getSpecificCustomer(self.event['CUSTOMER_ID']).get('CREDIT')
         #print(customerCredit)
         status = False
-        if customerCredit > self.event['cPrice']:
-            customerCredit = customerCredit - self.event['cPrice']
+        if customerCredit > self.event['COFFEE_PRICE']:
+            customerCredit = customerCredit - self.event['COFFEE_PRICE']
             status = True
             
         return [status, customerCredit]
@@ -101,9 +101,9 @@ class coffeeOrder:
     # Update user credits in database
     def updateCredits(self, leftAmount):
         #print("leftAmount", leftAmount)
-        status = self.cs.putCustomerDetail(self.event['cusId'], leftAmount, 1)
+        status = self.cs.putCustomerDetail(self.event['CUSTOMER_ID'], leftAmount, 1)
         if status == True:
-             self.event['credit'] = self.cs.getSpecificCustomer(self.event['cusId']).get('credit')
+             self.event['CREDIT'] = self.cs.getSpecificCustomer(self.event['CUSTOMER_ID']).get('CREDIT')
         else:
             print("Something went wrong....")
             exit
@@ -126,7 +126,7 @@ class coffeeOrder:
     def createAccount(self):
         customer = self.cs.postCustomerDetails()
         self.customer = self.cs.getCustomerDetails()
-        print("Your id is ", customer['id'])
+        print("Your id is ", customer['CUSTOMER_ID'])
 
     # For users to login and check for credits
     def logIn(self):
@@ -186,15 +186,18 @@ class coffeeOrder:
     #######################################################################################################################
 
     def manageEvents(self):
-        self.cs.postEventDetails(self.event)
-        #print(self.event)
-       
+        try:
+            self.cs.postEventDetails(self.event)
+            #print(self.event)
+        except error:
+            print(error)
+
     def viewCredits(self):
         try:
             view = int(input("Press 1 to see your remaining balance or  press any other number to exit from the system  "))
             if view == 1:
-                print("\nYour coffee bill was: ", self.event['cPrice'])
-                print("Remaining balance: ", self.event['credit'])
+                print("\nYour coffee bill was: ", self.event['COFFEE_PRICE'])
+                print("Remaining balance: ", self.event['CREDIT'])
             
         except ValueError:
             print("Systems only take numbers... press number 1 to view or any other number to exit")
@@ -264,8 +267,8 @@ class coffeeOrder:
         customer = self.cs.postCustomerDetails()
         status = False
         if customer is not None:
-            print("\nThank you for becoming our memeber!!!\n")
-            print("Your customer ID is ", customer['id'])
+            print("\nThank you for becoming our member!!!\n")
+            print("Your customer ID is ", customer['CUSTOMER_ID'])
             status = True
         return status
 
@@ -289,9 +292,9 @@ class coffeeOrder:
                     newCredit = newCredit + 50
                 elif newCredit >= 1000:
                     newCredit = newCredit + 100
-                status = self.cs.putCustomerDetail(self.event['cusId'], newCredit, 2)
+                status = self.cs.putCustomerDetail(self.event['CUSTOMER_ID'], newCredit, 2)
                 if status == True:
-                    print("New balance in account is ", self.cs.getSpecificCustomer(self.event['cusId']).get('credit'))
+                    print("New balance in account is ", self.cs.getSpecificCustomer(self.event['CUSTOMER_ID']).get('CREDIT'))
             except ValueError:
                 print("Amount can be only digits")
         else:
@@ -302,7 +305,7 @@ class coffeeOrder:
     def actionPerform4(self):
         loginStatus = self.login()
         if loginStatus == True:
-            customer = self.cs.getSpecificCustomer(self.event['cusId'])
+            customer = self.cs.getSpecificCustomer(self.event['CUSTOMER_ID'])
             if customer is not None:
                 print(customer)
                 status = True
@@ -314,7 +317,7 @@ class coffeeOrder:
     def actionPerform6(self):
         loginStatus = self.login()
         if loginStatus == True:
-            msg = self.cs.deleteCustomerDetail(self.event['cusId'])
+            msg = self.cs.deleteCustomerDetail(self.event['CUSTOMER_ID'])
             if msg is not None:
                 print(msg)
                 status = True

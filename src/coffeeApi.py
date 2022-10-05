@@ -7,61 +7,62 @@
 # use postman for post and delete methods
 
 
-from datetime import datetime
-from email.policy import default
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../database/CoffeeData.db'
-app.config['SQLALCHEMY_BINDS'] = {'customer' : 'sqlite:///../database/CustomersData.db' , 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../database/CofeeData.db'
+app.config['SQLALCHEMY_BINDS'] = {'customer' : 'sqlite:///../database/CustomerData.db' , 
                                   'shop' : 'sqlite:///../database/ShopData.db' }
 
 db = SQLAlchemy(app)
 
 # For handling database
 class CoffeeDetails(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    cName = db.Column(db.String(50), unique=True)
-    description = db.Column(db.String(150))
-    price = db.Column(db.Float, nullable=False)
+    COFFEE_ID = db.Column(db.Integer, primary_key=True)
+    COFFEE_NAME = db.Column(db.String(50), unique=True)
+    COFFEE_DESCRIPTION = db.Column(db.String(150))
+    COFFEE_PRICE = db.Column(db.Float, nullable=False)
 
     def __repr__(self):
-        return f'{self.cName} - {self.description} - {self.price}'
+        return f'{self.COFFEE_NAME} - {self.COFFEE_DESCRIPTION} - {self.COFFEE_PRICE}'
         
 
 class CustomersData(db.Model):
     __bind_key__ = 'customer'
-    id = db.Column(db.Integer, primary_key=True)
-    fname = db.Column(db.String(50))
-    lname = db.Column(db.String(50))
-    email = db.Column(db.String(150), unique=True)
-    pwd = db.Column(db.String(50))
-    credit = db.Column(db.Float)
+    CUSTOMER_ID = db.Column(db.Integer, primary_key=True)
+    FIRST_NAME = db.Column(db.String(50))
+    LAST_NAME = db.Column(db.String(50))
+    CUSTOMER_EMAIL = db.Column(db.String(150), unique=True)
+    PWD = db.Column(db.String(50))
+    CREDIT = db.Column(db.Float)
     
     def __repr__(self):
-        return f'{self.fname}  {self.lname}'
+        return f'{self.FIRST_NAME}  {self.LAST_NAME}'
 
 
 class ShopData(db.Model):
     __bind_key__ = 'shop'
-    bill = db.Column(db.Float, nullable=False)
-    email = db.Column(db.String(150))    
-    credit = db.Column(db.Float)
-    cName = db.Column(db.String(50))    
-    fname = db.Column(db.String(50))
-    cOrder = db.Column(db.Integer, nullable=False)
-    timeStamp = db.Column(db.String, nullable=False)
+    BILL = db.Column(db.Float, nullable=False)
+    CUSTOMER_EMAIL = db.Column(db.String(150))    
+    CREDIT = db.Column(db.Float)
+    CUSTOMER_ID = db.Column(db.Integer, nullable=False)
+    FIRST_NAME = db.Column(db.String(50))    
+    COFFEE_NAME = db.Column(db.String(50))
+    DATE = db.Column(db.String, nullable=False)
     #DateTime, default=datetime.now().strftime('%Y-%m-%d'))
-    id = db.Column(db.Integer, primary_key=True)
+    EVENT_ID = db.Column(db.Integer, primary_key=True)
 
     def __repr__(self):
-        return f'{self.fname}  {self.credit}  {self.timeStamp}'
+        return f'{self.FIRST_NAME}  {self.CREDIT}  {self.DATE}'
 
 # Starting page of the server
 @app.route('/')
 def index():
+    db.create_all()
     return ('Welcome here to our coffee shop')
 
 #######################################################################################################################
@@ -73,39 +74,40 @@ def get_customerDetails():
     customers = CustomersData.query.all()
     output = []
     for customer in customers:
-        details = {'id': customer.id, 'fname': customer.fname, 'lname': customer.lname, 'email': customer.email, 'credit': customer.credit}
+        details = {'CUSTOMER_ID': customer.CUSTOMER_ID, 'FIRST_NAME': customer.FIRST_NAME, 'LAST_NAME': customer.LAST_NAME, 'CUSTOMER_EMAIL': customer.CUSTOMER_EMAIL, 'CREDIT': customer.CREDIT}
         output.append(details)    
     return {"Customers" : output}
 
 # Add new customer into the database - POST METHOD
 @app.route('/customerDetails', methods=['POST'])
-def add_customerDetails():
-    customer = CustomersData(fname=request.json['fname'], lname=request.json['lname'], email=request.json['email'], pwd=request.json['pwd'], credit=request.json['credit'])
+def add_customerDetails():    
+    customer = CustomersData(CUSTOMER_ID=request.json['CUSTOMER_ID'], FIRST_NAME=request.json['FIRST_NAME'], LAST_NAME=request.json['LAST_NAME'], CUSTOMER_EMAIL=request.json['CUSTOMER_EMAIL'], PWD=request.json['PWD'], CREDIT=request.json['CREDIT'])
     db.session.add(customer)
     db.session.commit()
-    return {'id': customer.id}
+    return {'CUSTOMER_ID': customer.CUSTOMER_ID}
 
 # since put method is not supported in html so we will convert it into POST method
 # update particular customer details - PUT METHOD
 @app.route('/customerDetails/update', methods=['POST'])
 def update_customerDetails():
-    customer = CustomersData(id=request.json['id'], fname=request.json['fname'], lname=request.json['lname'], email=request.json['email'], pwd=request.json['pwd'], credit=request.json['credit'])
+    customer = CustomersData(CUSTOMER_ID=request.json['CUSTOMER_ID'], FIRST_NAME=request.json['FIRST_NAME'], LAST_NAME=request.json['LAST_NAME'], CUSTOMER_EMAIL=request.json['CUSTOMER_EMAIL'], PWD=request.json['PWD'], CREDIT=request.json['CREDIT'])
+    
     db.session.add(customer)
     db.session.commit()
-    return {'id': customer.id}
+    return {'CUSTOMER_ID': customer.CUSTOMER_ID}
 
 
 # update particular customer details - PUT METHOD
 @app.route('/customerDetails/<id>', methods=['PUT'])
 def update_customerDetail(id):
     customer = CustomersData.query.get(id)
-    customer['fname'] = request.json['fname']
-    customer['lname'] = request.json['lname']
-    customer['email'] = request.json['email']
-    customer['pwd'] = request.json['pwd']
-    customer['credit'] = request.json['credit']
+    customer['FIRST_NAME'] = request.json['FIRST_NAME']
+    customer['LAST_NAME'] = request.json['LAST_NAME']
+    customer['CUSTOMER_EMAIL'] = request.json['CUSTOMER_EMAIL']
+    customer['PWD'] = request.json['PWD']
+    customer['CREDIT'] = request.json['CREDIT']
     db.session.commit()
-    return {'id': customer['id'], 'fname': customer['fname'], 'lname': customer['lname'], 'email': customer['email'], 'credit': customer['credit']}
+    return {'CUSTOMER_ID': customer['CUSTOMER_ID'], 'FIRST_NAME': customer['FIRST_NAME'], 'LAST_NAME': customer['LAST_NAME'], 'CUSTOMER_EMAIL': customer['CUSTOMER_EMAIL'], 'CREDIT': customer['CREDIT']}
 
 # delete a particular customer - DELETE METHOD
 @app.route('/customerDetails/<id>', methods=['DELETE'])
@@ -121,7 +123,7 @@ def delete_customerDetail(id):
 @app.route('/customerDetails/<id>')
 def get_customDetail(id):
     customer = CustomersData.query.get_or_404(id)
-    return {'id': customer.id, 'fname': customer.fname, 'lname': customer.lname, 'email': customer.email, 'pwd': customer.pwd, 'credit': customer.credit}
+    return {'CUSTOMER_ID': customer.CUSTOMER_ID, 'FIRST_NAME': customer.FIRST_NAME, 'LAST_NAME': customer.LAST_NAME, 'CUSTOMER_EMAIL': customer.CUSTOMER_EMAIL, 'PWD': customer.PWD, 'CREDIT': customer.CREDIT}
 
 #######################################################################################################################
                        ########## IMPLEMENTING REST API FOR PRODUCT COFFEE ##########
@@ -132,27 +134,25 @@ def get_coffeeDetails():
     coffeeD = CoffeeDetails.query.all()
     output = []
     for coffee in coffeeD:
-        details = {'id': coffee.id, 'cName': coffee.cName, 'description': coffee.description, 'price': coffee.price}
+        details = {'COFFEE_ID': coffee.COFFEE_ID, 'COFFEE_NAME': coffee.COFFEE_NAME, 'COFFEE_DESCRIPTION': coffee.COFFEE_DESCRIPTION, 'COFFEE_PRICE': coffee.COFFEE_PRICE}
         output.append(details)    
     return {"coffee" : output}
 
 # add coffee details into the database - POST METHOD
 @app.route('/coffeeDetails', methods=['POST'])
 def add_coffeeDetails():
-    coffeeD = CoffeeDetails(cName=request.json['cName'], description=request.json['description'], price=request.json['price'])
+    coffeeD = CoffeeDetails(COFFEE_NAME=request.json['COFFEE_NAME'], COFFEE_DESCRIPTION=request.json['COFFEE_DESCRIPTION'], COFFEE_PRICE=request.json['COFFEE_PRICE'])
     db.session.add(coffeeD)
     db.session.commit()
-    return {'id': coffeeD.id}
+    return {'COFFEE_ID': coffeeD.COFFEE_ID}
 
 # update the details of particular coffee - PUT METHOD
-@app.route('/coffeeDetails/<id>', methods=['PUT'])
-def update_coffeeDetail(id):
-    coffeeD = CoffeeDetails.query.get(id)
-    coffeeD.cName = request.json['cName']
-    coffeeD.description = request.json['description']
-    coffeeD.price = request.json['price']
+@app.route('/coffeeDetails/update', methods=['POST'])
+def update_coffeeDetail():
+    coffee = CoffeeDetails(COFFEE_ID=request.json['COFFEE_ID'], COFFEE_NAME=request.json['COFFEE_NAME'], COFFEE_DESCRIPTION=request.json['COFFEE_DESCRIPTION'], COFFEE_PRICE=request.json['COFFEE_PRICE'])
+    db.session.add(coffee)
     db.session.commit()
-    return {'id': coffeeD.id, 'cName': coffeeD.cName, 'description': coffeeD.description, 'price': coffeeD.price}
+    return {'COFFEE_ID': coffee.COFFEE_ID}
 
 # delete a particular coffee - DELETE METHOD
 @app.route('/coffeeDetails/<id>', methods=['DELETE'])
@@ -168,7 +168,7 @@ def delete_coffeeDetail(id):
 @app.route('/coffeeDetails/<id>')
 def get_coffeeDetail(id):
     coffeeD = CoffeeDetails.query.get_or_404(id)
-    return {'id': coffeeD.id, 'cName': coffeeD.cName, 'description': coffeeD.description, 'price': coffeeD.price}
+    return {'COFFEE_ID': coffeeD.COFFEE_ID, 'COFFEE_NAME': coffeeD.COFFEE_NAME, 'COFFEE_DESCRIPTION': coffeeD.COFFEE_DESCRIPTION, 'COFFEE_PRICE': coffeeD.COFFEE_PRICE}
 
 
 #######################################################################################################################
@@ -180,23 +180,23 @@ def get_shopEvents():
     shopData = ShopData.query.all()
     output = []
     for event in shopData:
-        details = {'id': event.id, 'timeStamp': event.timeStamp, 'fname': event.fname, 'email': event.email, 'credit': event.credit, 'bill': event.bill, 'cName': event.cName, 'cOrder': event.cOrder}
+        details = {'EVENT_ID': event.EVENT_ID, 'DATE': event.DATE, 'FIRST_NAME': event.FIRST_NAME, 'CUSTOMER_EMAIL': event.CUSTOMER_EMAIL, 'CREDIT': event.CREDIT, 'BILL': event.BILL, 'COFFEE_NAME': event.COFFEE_NAME, 'CUSTOMER_ID': event.CUSTOMER_ID}
         output.append(details)    
     return {"ShopEvents" : output}
 
 # Add new event into the database - POST METHOD
 @app.route('/shopDetails', methods=['POST'])
 def add_shopEvent():
-    event = ShopData(fname=request.json['fname'], email=request.json['email'], credit=request.json['credit'], bill=request.json['bill'], cName=request.json['cName'], cOrder=request.json['cOrder'], timeStamp=str(datetime.now().strftime('%Y-%m-%d')))
+    event = ShopData(FIRST_NAME=request.json['FIRST_NAME'], CUSTOMER_EMAIL=request.json['CUSTOMER_EMAIL'], CREDIT=request.json['CREDIT'], BILL=request.json['BILL'], COFFEE_NAME=request.json['COFFEE_NAME'], CUSTOMER_ID=request.json['CUSTOMER_ID'], DATE=str(datetime.now().strftime('%Y-%m-%d')))
     db.session.add(event)
     db.session.commit()
-    return {'id': event.id}
+    return {'EVENT_ID': event.EVENT_ID}
 
 # display specific event
 @app.route('/shopDetails/<id>')
 def get_specificEvent(id):
     event = ShopData.query.get_or_404(id)
-    return {'id': event.id, 'timeStamp': event.timeStamp, 'fname': event.fname,  'credit': event.credit, 'bill': event.bill, 'cName': event.cName}
+    return {'EVENT_ID': event.EVENT_ID, 'DATE': event.DATE, 'FIRST_NAME': event.FIRST_NAME,  'CREDIT': event.CREDIT, 'BILL': event.BILL, 'COFFEE_NAME': event.COFFEE_NAME}
 
 # delete a particular event - DELETE METHOD
 @app.route('/shopDetails/<id>', methods=['DELETE'])
@@ -215,6 +215,6 @@ def get_shopEvent():
     shopData = ShopData.query.all()
     output = []
     for event in shopData:
-        details = {'id': event.id, 'email': event.email, 'credit': event.credit, 'cOrder': event.cOrder}
+        details = {'EVENT_ID': event.EVENT_ID, 'CUSTOMER_EMAIL': event.CUSTOMER_EMAIL, 'CREDIT': event.CREDIT, 'CUSTOMER_ID': event.CUSTOMER_ID}
         output.append(details)    
     return {"ShopEvents" : output}
