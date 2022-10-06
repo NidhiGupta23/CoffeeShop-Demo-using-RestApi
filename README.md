@@ -10,9 +10,6 @@ User can choose from the menu. To place a coffeeorder, user will create an accou
 # PRE-Requirement
 1. Read Requirement.txt and install mentioned softwares
 2. Open command prompt and go to src
-<<<<<<< Updated upstream
-3. Create and activate virtual environment - 
-=======
 3. Create and activate virtual environment
 ```
    python -m venv .venv
