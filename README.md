@@ -14,7 +14,6 @@ User can choose from the menu. To place a coffeeorder, user will create an accou
 3. Create and activate virtual environment - 
 =======
 3. Create and activate virtual environment
->>>>>>> Stashed changes
 ```
    python -m venv .venv
    .venv\Scripts\activate
