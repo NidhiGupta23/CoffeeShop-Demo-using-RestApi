@@ -1,31 +1,45 @@
 # CoffeeShop-Demo-using-RestApi
 Performing CRUD operations using RESTAPI
 
+# Project
+Coffee Shop
+
+# Description
+User can choose from the menu. To place a coffeeorder, user will create an account and then place an order for coffee. If order is placed successfully, order Id along with bill and left amount is displayed. One of the feature is to see the coffee of the month, where a graph represents the number of coffees that were ordered in that specific month. 
+
 # PRE-Requirement
-1. Install python 3.10
+1. Read Requirement.txt and install mentioned softwares
 2. Open command prompt and go to src
+<<<<<<< Updated upstream
 3. Create and activate virtual environment - 
+=======
+3. Create and activate virtual environment
+>>>>>>> Stashed changes
 ```
    python -m venv .venv
    .venv\Scripts\activate
 ```
 4. Once virtual environment is activated, install
-   a). pip install flask
-   b). pip install flask_sqlalchemy
-   c). pip install pandas
-5. Run flask -
-   a). set FLASK_APP=coffeeApi.py
-   b). flask run
+```
+   pip install flask
+   pip install flask_sqlalchemy
+   pip install pandas
+   pip install seaborn
+```
+5. Run flask
+```
+   set FLASK_APP=coffeeApi.py
+   flask run
+```
 
 # Execution
-1. If using VSCode, run main.py
-2. Open command prompt and go to src. Run python main.py
+Run coffeeShop.py
 
 # Motto
 Develop a working application using RestApi
 
 # LICENSE
-MIT license
+This project is licensed under the MIT license - see the LICENSE file for details
 
 # Author
 Nidhi Gupta
