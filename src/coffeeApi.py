@@ -74,7 +74,7 @@ def get_customerDetails():
     customers = CustomersData.query.all()
     output = []
     for customer in customers:
-        details = {'CUSTOMER_ID': customer.CUSTOMER_ID, 'FIRST_NAME': customer.FIRST_NAME, 'LAST_NAME': customer.LAST_NAME, 'CUSTOMER_EMAIL': customer.CUSTOMER_EMAIL, 'CREDIT': customer.CREDIT}
+        details = {'CUSTOMER_ID': customer.CUSTOMER_ID, 'FIRST_NAME': customer.FIRST_NAME, 'LAST_NAME': customer.LAST_NAME, 'CUSTOMER_EMAIL': customer.CUSTOMER_EMAIL, 'PWD': customer.PWD, 'CREDIT': customer.CREDIT}
         output.append(details)    
     return {"Customers" : output}
 

@@ -1,20 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from pyparsing import col
 import seaborn as sns
 import datetime as dt
-
 import consumeCoffeeApi as consumer
 
-'''Layout of this class
-1. get all events from shop data
-2. transfer it to pandas dataframe
-3. get a dicitonary or list to count the no. of coffees that were ordered
-4. plot a graph through the data
-
-3. get a list of people and no. of times they ordered coffee
-4. 
-'''
 
 class plottinGraphs:
    def __init__(self):
@@ -33,7 +22,6 @@ class plottinGraphs:
       print('\n', self.df.set_index('EVENT_ID'))
 
 
-
    def viewPopularCoffee(self, column1):       
       sns.set(style="whitegrid")
       sns.countplot(x=column1, data=self.df.loc[(self.df['MONTH']==dt.datetime.now().month) & (self.df['YEAR']==dt.datetime.now().year)]) 
@@ -41,48 +29,46 @@ class plottinGraphs:
       plt.show()
 
 
-   def viewCustomer(self, column1, column2):
+   def viewCustomer(self, column2):
       # use customr ID here to display
-      trimData = self.df.groupby(column1).sum().reset_index()
-      print(trimData)
-      '''trimData1 = self.df.groupby('Name').sum().reset_index()
-      print(trimData1)
-      print(trimData1.merge(trimData))'''
       sns.set(style="whitegrid")
       if column2 == 'CoffeeOrder':
-         plot1 = sns.barplot(x='Name', y=column2, data=trimData)
+         plot1 =  sns.countplot(x=self.df['CUSTOMER_ID'],data=self.df['YEAR']==dt.datetime.now().year)
          plt.title('Customers vs Coffee ordered')
+         plt.show() 
       elif column2 == 'Credit':
-         plot1 = sns.barplot(x='Name', y=column2, data=trimData)
-         plt.title('Customers vs Credit')
-      
-
-      plt.show()      
+         self.customerCredit()
+      else:
+         print("Not supported currently...")       
 
 
-   def bonusCoffee(self, column1, CUSTOMER_EMAIL):
-      trimData = self.df[self.df[column1]==CUSTOMER_EMAIL]
-      thisYear = dt.datetime.now().year
-
-      
-
-      '''1. sought date
-           a. get year and MONTH
-           b. get data of same year
-         2. count the coffee order
-         3. add 1 coffee check if sum is a multiple of 7
-           a. yes: send a signal to make that order free
-           b. no: send a signal to deduct amount from CREDIT
-           '''
-      
-      
-
+   def bonusCoffee(self, column1, user):
+      trimData = self.df.loc[(self.df[column1]==user) & (self.df['YEAR']==dt.datetime.now().year)]
+      '''print("trim Data")      print(trimData)'''
+      if (len(trimData.value_counts())+1) % 7 == 0 :
+         setBonus = True
+         print("Your coffee is on the house")
+      else:
+         setBonus = False
+         print("Order few more for bonus coffee")
+      return setBonus
 
    
+   def customerCredit(self):
+      self.customer =  self.cs.getCustomerDetails()
+      self.customerAll = self.customer.get('Customers')
+      self.customerdf = pd.DataFrame(columns=['CUSTOMER_ID', 'FIRST_NAME', 'LAST_NAME', 'CUSTOMER_EMAIL', 'PWD', 'CREDIT'] )
+      for i in range(0, len(self.customerAll)): 
+         self.customerdf.loc[i] = [self.customerAll[i]['CUSTOMER_ID'], self.customerAll[i]['FIRST_NAME'], self.customerAll[i]['LAST_NAME'],  self.customerAll[i]['CUSTOMER_EMAIL'], self.customerAll[i]['PWD'], self.customerAll[i]['CREDIT']]
+ 
+      plot1 =  sns.barplot(x=self.customerdf['CUSTOMER_ID'], y=self.customerdf['CREDIT'] , data=self.customerdf)
+      plt.title('Customers vs Credit')
+      plt.show()     
 
-p1 = plottinGraphs()
-p1.viewEvents()
+
+'''p1 = plottinGraphs()
+#p1.viewEvents()
 p1.viewPopularCoffee('COFFEE_NAME')
-p1.viewCustomer('MailID', 'CoffeeOrder')
-p1.viewCustomer('MailID', 'Credit')
-p1.bonusCoffee('MailID', 'jan@coffee.com')
+p1.viewCustomer('CoffeeOrder')
+p1.viewCustomer('Credit')
+#p1.bonusCoffee('MailID', 'jan@coffee.com')'''

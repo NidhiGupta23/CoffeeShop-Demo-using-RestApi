@@ -39,7 +39,7 @@ if __name__ == "__main__":
     while(option == True):
         c1 = order.coffeeOrder()
         service = c1.viewMainMenu()
-        if int(service) != 0 and int(service) <= 9:
+        if int(service) >= 1  and int(service) <= 10:
             completed = c1.actionToPerforme(service)
             if int(service) == 2 and completed == True:
                 print("\nOrder ID : ", count_order()) 
@@ -52,7 +52,6 @@ if __name__ == "__main__":
 
         print("\n\nHi, welcome back!!! It is good to see you back :)")
         option=chooseOption()
-        
         del c1
 
 

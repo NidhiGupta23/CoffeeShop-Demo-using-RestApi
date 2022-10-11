@@ -2,7 +2,7 @@ from distutils.log import error
 import time
 import pandas as pd
 import consumeCoffeeApi as consumer
-#import plottinGraphs as pg
+import plottinGraphs as pg
 
 class coffeeOrder:
 
@@ -10,7 +10,7 @@ class coffeeOrder:
         self.cs = consumer.consumeCoffeeApi()
         self.coffee =  self.cs.getCoffeeDetails()
         self.customer = self.cs.getCustomerDetails()
-        #self.plotGraph = pg.plottinGraphs()
+        self.plotGraph = pg.plottinGraphs()
         self.event = {}
   
     # Display the coffee menu
@@ -56,7 +56,7 @@ class coffeeOrder:
         else:
             cpwd = input("Enter the password :  ")
             status = self.checkPwd(cpwd) 
-            #print("Status after checking pwd  ",status)print("Status after else  ",status)
+            '''print("Status after checking pwd  ",status)  print("Status after else  ",status)'''
         return status
 
 
@@ -65,8 +65,7 @@ class coffeeOrder:
         try:
             for index in range(len(self.customer.get('Customers'))):
                 if cemail == self.customer.get('Customers')[index].get('CUSTOMER_EMAIL'):
-                    '''print("After getting the :  ", index) 
-                    print( self.customer.get('Customers')[index])'''
+                    '''print("After getting the :  ", index)                     print( self.customer.get('Customers')[index])'''
                     self.event['cusIndex'] = index
                     self.event['CUSTOMER_ID'] = self.customer.get('Customers')[index].get('CUSTOMER_ID')
                     break            
@@ -85,6 +84,7 @@ class coffeeOrder:
         else:
             print("Wrong password entered!!!")
             exit
+        #print("After getting the pwd:  ", status) 
         return status
 
     # Get credit check and return status
@@ -133,12 +133,18 @@ class coffeeOrder:
         try:
             print("Kindly login into your account :) ")
             loginStatus = self.login()
+            print("After email and pwd: ", loginStatus)
             if loginStatus == False:
-                print("Please check your user email/password and coffee Id")
+                print("Please check your user email/password")
                 exit
-            else:
+            else:                
+                onHouse = self.plotGraph.bonusCoffee('CUSTOMER_EMAIL', self.event['CUSTOMER_EMAIL'])
                 self.coffeePrice()
-                orderStatus = self.checkCredits()
+                if onHouse == True:
+                    self.event['CREDIT'] = self.cs.getSpecificCustomer(self.event['CUSTOMER_ID']).get('CREDIT')
+                    orderStatus = self.cs.putCustomerDetail(self.event['CUSTOMER_ID'], self.event['CREDIT'], 3)
+                else:
+                    orderStatus = self.checkCredits()
                 return orderStatus
         except:
             print("Please check your user email/password or coffee Id")
@@ -193,16 +199,13 @@ class coffeeOrder:
             print(error)
 
     def viewCredits(self):
-        try:
-            view = int(input("Press 1 to see your remaining balance or  press any other number to exit from the system  "))
-            if view == 1:
-                print("\nYour coffee bill was: ", self.event['COFFEE_PRICE'])
-                print("Remaining balance: ", self.event['CREDIT'])
-            
-        except ValueError:
-            print("Systems only take numbers... press number 1 to view or any other number to exit")
+        view = int(input("Press 1 to see your remaining balance or  press any other number to exit from the system  "))
+        if view == 1:
+            print("\nYour coffee bill was: ", self.event['COFFEE_PRICE'])
+            print("Remaining balance: ", self.event['CREDIT'])
+        else:
+            exit()    
         
-
 ############################ DESIGN COFFEE SHOP #######################################################
 
     def viewMainMenu(self):
@@ -216,18 +219,9 @@ class coffeeOrder:
         print("7. View Coffee of the month")
         print("8. Give feedback and rating")
         print("9. Admin")
-        try:
-            option = input("\nKindly choose one of the options from above and press Enter to continue  ")
-        except ValueError:
-            print("Kinly insert only integers")
-            try:
-                option = int(input("Kindly choose one of the options from above and press Enter to continue  "))
-            except ValueError:
-                print('Only accepts integers!!!')
-        finally:
-            if option is None:
-                option = 0
-            return option
+        print("10. Offers")
+        option = input("\nKindly choose one of the options from above and press Enter to continue  ")        
+        return option
 
     def actionToPerforme(self, option):
         if option == '1':
@@ -248,15 +242,20 @@ class coffeeOrder:
             print("\nLogin to delete your account\n")
             status = self.actionPerform6()
         elif option == '7':
-            print("\nIt is wise to view and coffee of the month ")
-            self.plotGraph.viewPopularCoffee('CoffeeName', 'CoffeeOrder')            
+            print("\nIt is wise to view coffee of the month ")
+            self.plotGraph.viewPopularCoffee('COFFEE_NAME')   
+            status = True          
         #TODO
         elif option == '8':
             print("Feature yet to be implemented")
             status = True    
         elif  option == '9':
             print("Login with your credentials")
-            status = self.actionPerform9()      
+            status = self.actionPerform9()   
+        elif option == '10':
+            print("Offers and discounts")
+            self.actionPerform10()
+            status = True   
         else:
             print("\n\nWe are sad to see you go... Hope you will choose us again for a great cup of coffee")
             exit()
@@ -280,7 +279,7 @@ class coffeeOrder:
         return status
 
     def actionPerform3(self):
-        print("\nHello, are you aware of our offer? If not, then let me tell you.")
+        print("\nAdditional Offers: ")
         print("\nAdd 500kr and get additional 50kr in your wallet")
         print("\nAdd 1000kr and get additional 100kr in your wallet")
         print("\n\nEnter your login credentials")
@@ -307,7 +306,9 @@ class coffeeOrder:
         if loginStatus == True:
             customer = self.cs.getSpecificCustomer(self.event['CUSTOMER_ID'])
             if customer is not None:
-                print(customer)
+                print("-----------------------------------------------------")
+                print( pd.DataFrame.from_dict(customer, orient='index'))
+                print("-----------------------------------------------------")
                 status = True
         else:
             print("Wrong email or password.")
@@ -369,3 +370,11 @@ class coffeeOrder:
             else:
                 break
             choice = input('Do you still want to perform any operation')
+
+
+    def actionPerform10(self):
+        print("1. Get every 7th coffee free in our shop \n  Condition applied: Valid per year")
+        print("2. Additional Offers: \n   ")
+        print("Add 500kr and get additional 50kr in your wallet \n  ")
+        print("Add 1000kr and get additional 100kr in your wallet")
+
