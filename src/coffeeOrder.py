@@ -237,7 +237,8 @@ class coffeeOrder:
             print("\nLogin to see your account details!!!\n")
             status = self.actionPerform4()
         elif option == '5':
-            pass
+            print("\nNodify your details")
+            status = self.actionPerform5()
         elif option == '6':
             print("\nLogin to delete your account\n")
             status = self.actionPerform6()
@@ -315,6 +316,34 @@ class coffeeOrder:
             status = False
         return status
 
+    def actionPerform5(self):
+        print("Your details as of now")
+        print("*** NOTE: CUSTOMER ID WILL NOT BE MODIFIED ***")
+        self.actionPerform4()
+        change = input("Press 1 to continue changing details or any other key to go to main menu")
+        if int(change) == 1:
+            status = self.subActionPerform5()
+        else:
+            status = True
+        return status
+
+    def subActionPerform5(self):
+        print("\n\nBelow are the field that can be modified")
+        print("1. First Name")
+        print("2. Last Name")
+        print("3. Email ID")
+        print("4. Password")
+        print("5. Credit to add")
+        option = input("Choose which field you want to modify")
+        try:
+            if int(option) >= 1 and int(option) <= 5:
+                pass
+
+        except ValueError:
+            print()
+
+
+    
     def actionPerform6(self):
         loginStatus = self.login()
         if loginStatus == True:
@@ -337,7 +366,7 @@ class coffeeOrder:
         else:
             print("Invalid user name or password. Try again")
 
-   
+
     def subActionPerform9(self):
         choice = True
         while choice==True:
@@ -348,13 +377,13 @@ class coffeeOrder:
             print("4. Modify coffee description")
             print('5. Add new item in menu')
             print('6. Exit sub menu')
-            adminOption = input('Choose an option from top')
+            adminOption = input('Choose an option from top ')
             if adminOption == '1':
                 print("Graph of customers vs credit in their account")
-                self.plotGraph.viewCustomer('MailID', 'Credit')
+                self.plotGraph.viewCustomer('Credit')
             elif adminOption == '2':
                 print("Graph of customers vs no. of coffees ordered")
-                self.plotGraph.viewCustomer('MailID', 'CoffeeOrder')
+                self.plotGraph.viewCustomer('CoffeeOrder')
             elif adminOption == '3':
                 print("Enter details to update coffee prices")
                 coffeeId = int(input("Enter the coffee Id : "))
@@ -369,7 +398,7 @@ class coffeeOrder:
                 print("Want to add something new ")
             else:
                 break
-            choice = input('Do you still want to perform any operation')
+            choice = input('Do you still want to perform any operation ')
 
 
     def actionPerform10(self):

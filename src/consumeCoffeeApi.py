@@ -88,6 +88,21 @@ class consumeCoffeeApi:
             return False
        
 
+    def modifyCustomerDetails(self, id, field, newValue):
+        customerDetails = self.getSpecificCustomer(id)
+        deletedcustomer = self.deleteCustomerDetail(id)
+        if deletedcustomer:
+            if field == 'FN':
+                pass
+            elif field == 'LN':
+                pass
+            elif field == 'EMail':
+                pass
+            elif field == 'PWD':
+                pass
+            elif field == 'CREDIT':
+                pass
+
     # delete specific customer
     def deleteCustomerDetail(self, id):
         try:

@@ -63,7 +63,8 @@ class plottinGraphs:
  
       plot1 =  sns.barplot(x=self.customerdf['CUSTOMER_ID'], y=self.customerdf['CREDIT'] , data=self.customerdf)
       plt.title('Customers vs Credit')
-      plt.show()     
+      plt.show()
+
 
 
 '''p1 = plottinGraphs()
