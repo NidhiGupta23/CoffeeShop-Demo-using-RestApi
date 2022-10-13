@@ -58,51 +58,38 @@ class consumeCoffeeApi:
         customer_id = randrange(000000, 999999)
         customerDetails = req.post(self.customerApi, json = {'CUSTOMER_ID':customer_id,'FIRST_NAME': fname, 'LAST_NAME': lname, 'CUSTOMER_EMAIL': email, 'PWD':pwd, 'CREDIT': credit})
         return customerDetails.json()
+        
 
-
-    def putCustomerDetail(self, id, newCredit, activity):
-        customerDetails = self.getSpecificCustomer(id)
-        #print(customerDetails)
-        deletedcustomer = self.deleteCustomerDetail(id)
-        #print(deletedcustomer)
-        if deletedcustomer:
-            if activity == 1:
-                response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': newCredit})
-                if response is not NULL:
-                    return True
-                else:
-                    return False
-            elif activity == 2:
-                response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': customerDetails['CREDIT'] + newCredit})
-                if response is not NULL:
-                    return True
-                else:
-                    return False
-            else:
-                response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': customerDetails['CREDIT']})
-                if response is not NULL:
-                    return True
-                else:
-                    return False
-        else:
-            return False
-       
-
-    def modifyCustomerDetails(self, id, field, newValue):
+    def modifyCustomerDetails(self, id, field, newValue, activity=None):
         customerDetails = self.getSpecificCustomer(id)
         deletedcustomer = self.deleteCustomerDetail(id)
         if deletedcustomer:
             if field == 'FN':
-                pass
+                response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': newValue, 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': customerDetails['CREDIT']})
             elif field == 'LN':
-                pass
-            elif field == 'EMail':
-                pass
-            elif field == 'PWD':
-                pass
-            elif field == 'CREDIT':
-                pass
+                response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': newValue, 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': customerDetails['CREDIT']})
+            elif field == 'EL':
+                response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': newValue, 'PWD': customerDetails['PWD'], 'CREDIT': customerDetails['CREDIT']})
+            elif field == 'PD':
+                response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': newValue, 'CREDIT': customerDetails['CREDIT']})
+            elif field == 'CD':
+                if activity == 1:
+                    response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': newValue})
+                elif activity == 2:
+                    response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': customerDetails['CREDIT'] + newValue})
+                else:
+                    response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': customerDetails['CREDIT']})
+            else:
+                response = NULL
 
+            if response is not NULL:
+                return True
+            else:
+                return False
+        else:
+            return False
+       
+       
     # delete specific customer
     def deleteCustomerDetail(self, id):
         try:

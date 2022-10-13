@@ -101,7 +101,7 @@ class coffeeOrder:
     # Update user credits in database
     def updateCredits(self, leftAmount):
         #print("leftAmount", leftAmount)
-        status = self.cs.putCustomerDetail(self.event['CUSTOMER_ID'], leftAmount, 1)
+        status = self.cs.modifyCustomerDetails(self.event['CUSTOMER_ID'], 'CD', leftAmount, 1)
         if status == True:
              self.event['CREDIT'] = self.cs.getSpecificCustomer(self.event['CUSTOMER_ID']).get('CREDIT')
         else:
@@ -142,7 +142,7 @@ class coffeeOrder:
                 self.coffeePrice()
                 if onHouse == True:
                     self.event['CREDIT'] = self.cs.getSpecificCustomer(self.event['CUSTOMER_ID']).get('CREDIT')
-                    orderStatus = self.cs.putCustomerDetail(self.event['CUSTOMER_ID'], self.event['CREDIT'], 3)
+                    orderStatus = self.cs.modifyCustomerDetails(self.event['CUSTOMER_ID'],'CD', self.event['CREDIT'], 3)
                 else:
                     orderStatus = self.checkCredits()
                 return orderStatus
@@ -284,7 +284,11 @@ class coffeeOrder:
         print("\nAdd 500kr and get additional 50kr in your wallet")
         print("\nAdd 1000kr and get additional 100kr in your wallet")
         print("\n\nEnter your login credentials")
-        loginStatus = self.login()
+        if self.event.get('CUSTOMER_ID') != None:
+            loginStatus = True
+        else:
+            loginStatus = self.login()
+
         if loginStatus == True:
             try:
                 newCredit = float(input("Amount to be added in credit : "))
@@ -292,7 +296,7 @@ class coffeeOrder:
                     newCredit = newCredit + 50
                 elif newCredit >= 1000:
                     newCredit = newCredit + 100
-                status = self.cs.putCustomerDetail(self.event['CUSTOMER_ID'], newCredit, 2)
+                status = self.cs.modifyCustomerDetails(self.event['CUSTOMER_ID'],'CD', newCredit, 2)
                 if status == True:
                     print("New balance in account is ", self.cs.getSpecificCustomer(self.event['CUSTOMER_ID']).get('CREDIT'))
             except ValueError:
@@ -316,10 +320,10 @@ class coffeeOrder:
             status = False
         return status
 
-    def actionPerform5(self):
+    def actionPerform5(self):        
+        self.actionPerform4()
         print("Your details as of now")
         print("*** NOTE: CUSTOMER ID WILL NOT BE MODIFIED ***")
-        self.actionPerform4()
         change = input("Press 1 to continue changing details or any other key to go to main menu")
         if int(change) == 1:
             status = self.subActionPerform5()
@@ -336,11 +340,29 @@ class coffeeOrder:
         print("5. Credit to add")
         option = input("Choose which field you want to modify")
         try:
-            if int(option) >= 1 and int(option) <= 5:
-                pass
-
+            if int(option) == 1:
+                updateValue = input("Enter new name")
+                key = 'FN'
+            elif int(option) == 2:
+                updateValue = input("Enter new name")
+                key = 'LN'
+            elif int(option) == 3:
+                updateValue = input("New email id... make sure its not the same as old one")
+                key = 'EL'
+            elif int(option) == 4:
+                updateValue = input("Enter new password")
+                key = 'PD'
+            elif int(option) == 5:
+                self.actionPerform3()
+            else:
+                key = 0 
+                
+            if key != 0:
+                self.cs.modifyCustomerDetails(self.event['CUSTOMER_ID'], key, updateValue)
+            else:
+                print("Wrong option")
         except ValueError:
-            print()
+            print(ValueError)
 
 
     
