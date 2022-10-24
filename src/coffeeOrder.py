@@ -65,7 +65,8 @@ class coffeeOrder:
         try:
             for index in range(len(self.customer.get('Customers'))):
                 if cemail == self.customer.get('Customers')[index].get('CUSTOMER_EMAIL'):
-                    '''print("After getting the :  ", index)                     print( self.customer.get('Customers')[index])'''
+                   # print("After getting the :  ", index)                     
+                   # print( self.customer.get('Customers')[index])
                     self.event['cusIndex'] = index
                     self.event['CUSTOMER_ID'] = self.customer.get('Customers')[index].get('CUSTOMER_ID')
                     break            
@@ -133,17 +134,20 @@ class coffeeOrder:
         try:
             print("Kindly login into your account :) ")
             loginStatus = self.login()
-            print("After email and pwd: ", loginStatus)
+            #print("After email and pwd: ", loginStatus)
             if loginStatus == False:
                 print("Please check your user email/password")
                 exit
-            else:                
+            else:   
+                #print("We are inside the login")             
                 onHouse = self.plotGraph.bonusCoffee('CUSTOMER_EMAIL', self.event['CUSTOMER_EMAIL'])
+                #print("came back from the onHouse :  ", onHouse)
                 self.coffeePrice()
                 if onHouse == True:
                     self.event['CREDIT'] = self.cs.getSpecificCustomer(self.event['CUSTOMER_ID']).get('CREDIT')
                     orderStatus = self.cs.modifyCustomerDetails(self.event['CUSTOMER_ID'],'CD', self.event['CREDIT'], 3)
                 else:
+                    #print("Came back from bonus coffee")
                     orderStatus = self.checkCredits()
                 return orderStatus
         except:
@@ -167,10 +171,10 @@ class coffeeOrder:
     def order(self):   
         orderStatus = False     
         signUp = input("\n\nDo you have an account?  Press yes or no and enter  ")
-        if signUp == 'no':
+        if signUp.lower() == 'no' or signUp.lower() == 'n':
             self.createAccount()
             orderStatus=self.signUpStatus()
-        elif signUp == 'yes':            
+        elif signUp.lower() == 'yes' or  signUp.lower() == 'y':            
             orderStatus=self.logIn()
         else:
             print("Choose either yes or no !!!")
@@ -199,17 +203,16 @@ class coffeeOrder:
             print(error)
 
     def viewCredits(self):
-        view = int(input("Press 1 to see your remaining balance or  press any other number to exit from the system  "))
-        if view == 1:
+        view = input("Press 1 to see your remaining balance or  press any other number to exit from the system  ")
+        if view == '1':
             print("\nYour coffee bill was: ", self.event['COFFEE_PRICE'])
             print("Remaining balance: ", self.event['CREDIT'])
-        else:
-            exit()    
+        
         
 ############################ DESIGN COFFEE SHOP #######################################################
 
     def viewMainMenu(self):
-        print("\nFollowing are the services that we provide:")
+        print("\nMain Menu")
         print("1. Create account")
         print("2. Order a coffee")
         print("3. Add money to wallet")
@@ -220,24 +223,24 @@ class coffeeOrder:
         print("8. Give feedback and rating")
         print("9. Admin")
         print("10. Offers")
-        option = input("\nKindly choose one of the options from above and press Enter to continue  ")        
+        option = input("\nEnter your choice or * to exit  ")        
         return option
 
     def actionToPerforme(self, option):
         if option == '1':
-            print("\nKindly enter following details to create your account: \n")
+            print("\nAccount creation: \n")
             status = self.actionPerform1()
         elif option == '2':
             print("\nWe are ready to take you coffee order that will make your day extra special :) \n")
             status = self.actionPerform2() 
         elif option == '3':
-            print("\nWelcome back to add amount in your wallet!!!\n")
+            print("\nAdd amount in your wallet!!!\n")
             status = self.actionPerform3()
         elif option == '4':
             print("\nLogin to see your account details!!!\n")
             status = self.actionPerform4()
         elif option == '5':
-            print("\nNodify your details")
+            print("\nModify your details")
             status = self.actionPerform5()
         elif option == '6':
             print("\nLogin to delete your account\n")
@@ -254,12 +257,14 @@ class coffeeOrder:
             print("Login with your credentials")
             status = self.actionPerform9()   
         elif option == '10':
-            print("Offers and discounts")
+            print("Offers and discounts\n")
             self.actionPerform10()
             status = True   
-        else:
+        elif option == '*':
             print("\n\nWe are sad to see you go... Hope you will choose us again for a great cup of coffee")
             exit()
+        else:
+            print("Wrong option selected")
         return status
         
 
@@ -275,15 +280,15 @@ class coffeeOrder:
 
     def actionPerform2(self):
         self.viewCoffeeMenu()
-        time.sleep(2)
         status = self.take_order()
         return status
 
     def actionPerform3(self):
         print("\nAdditional Offers: ")
-        print("\nAdd 500kr and get additional 50kr in your wallet")
-        print("\nAdd 1000kr and get additional 100kr in your wallet")
-        print("\n\nEnter your login credentials")
+        print("Add 500kr and get additional 50kr in your wallet")
+        print("Add 1000kr and get additional 100kr in your wallet")
+        print("\nEnter your login credentials")
+        status = False
         if self.event.get('CUSTOMER_ID') != None:
             loginStatus = True
         else:
@@ -296,11 +301,16 @@ class coffeeOrder:
                     newCredit = newCredit + 50
                 elif newCredit >= 1000:
                     newCredit = newCredit + 100
+                print("Old balance in account is ", self.cs.getSpecificCustomer(self.event['CUSTOMER_ID']).get('CREDIT'))
+                print("Amount to be added: ", newCredit)
                 status = self.cs.modifyCustomerDetails(self.event['CUSTOMER_ID'],'CD', newCredit, 2)
                 if status == True:
                     print("New balance in account is ", self.cs.getSpecificCustomer(self.event['CUSTOMER_ID']).get('CREDIT'))
+                
             except ValueError:
                 print("Amount can be only digits")
+            finally:
+                return status
         else:
             print("Please check your user email/password")
             exit
@@ -309,6 +319,7 @@ class coffeeOrder:
     def actionPerform4(self):
         loginStatus = self.login()
         if loginStatus == True:
+            #customer = self.cs.getSpecificCustomer(823677)
             customer = self.cs.getSpecificCustomer(self.event['CUSTOMER_ID'])
             if customer is not None:
                 print("-----------------------------------------------------")
@@ -327,8 +338,12 @@ class coffeeOrder:
         change = input("Press 1 to continue changing details or any other key to go to main menu")
         if int(change) == 1:
             status = self.subActionPerform5()
+            if status == True:
+                self.actionPerform4()
         else:
             status = True
+
+        
         return status
 
     def subActionPerform5(self):
@@ -338,19 +353,24 @@ class coffeeOrder:
         print("3. Email ID")
         print("4. Password")
         print("5. Credit to add")
-        option = input("Choose which field you want to modify")
+        option = input("Choose which field you want to modify ")
+        status = False
         try:
             if int(option) == 1:
                 updateValue = input("Enter new name")
-                key = 'FN'
+                print("Old value is: ", self.cs.getSpecificCustomer(self.event['CUSTOMER_ID'].get('FIRST_NAME')))
+                key = 'FN' 
             elif int(option) == 2:
                 updateValue = input("Enter new name")
+                print("Old value is: ", self.cs.getSpecificCustomer(self.event['CUSTOMER_ID'].get('LAST_NAME')))
                 key = 'LN'
             elif int(option) == 3:
                 updateValue = input("New email id... make sure its not the same as old one")
+                print("Old value is: ", self.cs.getSpecificCustomer(self.event['CUSTOMER_ID'].get('CUSTOMER_EMAIL')))
                 key = 'EL'
             elif int(option) == 4:
                 updateValue = input("Enter new password")
+                print("Old value is: ", self.cs.getSpecificCustomer(self.event['CUSTOMER_ID'].get('PWD')))
                 key = 'PD'
             elif int(option) == 5:
                 self.actionPerform3()
@@ -358,13 +378,13 @@ class coffeeOrder:
                 key = 0 
                 
             if key != 0:
-                self.cs.modifyCustomerDetails(self.event['CUSTOMER_ID'], key, updateValue)
+                status = self.cs.modifyCustomerDetails(self.event['CUSTOMER_ID'], key, updateValue)
             else:
                 print("Wrong option")
+                
         except ValueError:
-            print(ValueError)
-
-
+            print("Only integers are allowed")
+        return status
     
     def actionPerform6(self):
         loginStatus = self.login()
@@ -383,23 +403,25 @@ class coffeeOrder:
         adminUser = input("Enter Admin user name: ")
         adminPwd = input("Enter Admin password: ")
         if adminUser == 'AdminUser123' and adminPwd == 'AdminPwd123':
-            print('\nHello, Admin. \nChoose the services you want to perform')
+            print('\nHello, Admin. \nChoose the services you want to perform ')
             self.subActionPerform9()
+            status = True
         else:
             print("Invalid user name or password. Try again")
+        return status
 
 
     def subActionPerform9(self):
         choice = True
         while choice==True:
-            print("\nFollowing are the services that you can see")
+            print("\nSub Menu")
             print("1. View customer vs credit graph")
             print("2. View customer vs coffee ordered graph")
             print("3. Modify coffee prices")
             print("4. Modify coffee description")
             print('5. Add new item in menu')
             print('6. Exit sub menu')
-            adminOption = input('Choose an option from top ')
+            adminOption = input('Enter your option ')
             if adminOption == '1':
                 print("Graph of customers vs credit in their account")
                 self.plotGraph.viewCustomer('Credit')
@@ -408,24 +430,31 @@ class coffeeOrder:
                 self.plotGraph.viewCustomer('CoffeeOrder')
             elif adminOption == '3':
                 print("Enter details to update coffee prices")
-                coffeeId = int(input("Enter the coffee Id : "))
-                newPrice = float(input("Enter new price : "))
-                status = self.updateCoffeeDetails(coffeeId, newPrice)
+                coffeeId = int(input("Enter the coffee Id: "))
+                newPrice = float(input("Enter new price: "))
+                status = self.cs.updateCoffeeDetails(coffeeId, 'price', newPrice)
             elif adminOption == '4':
                 print("Enter details to update coffee description")
-                coffeeId = int(input("Enter the coffee Id : "))
-                newDesp =  input("Enter new description : ")
-                status = self.updateCoffeeDetails(coffeeId, newDesp)
+                coffeeId = int(input("Enter the coffee Id: "))
+                newDesp =  input("Enter new description: ")
+                status = self.cs.updateCoffeeDetails(coffeeId, 'description', newDesp)
             elif adminOption == '5':
                 print("Want to add something new ")
+                newItem = self.cs.postCoffeeDetails()
+                status = False
+                if newItem is not None:
+                    print("New Item ID is ", newItem['COFFEE_ID'])
+                    status = True
+                return status
+
             else:
                 break
-            choice = input('Do you still want to perform any operation ')
+            choice = input('Do you still want to perform any operation(True/False) ')
 
 
     def actionPerform10(self):
-        print("1. Get every 7th coffee free in our shop \n  Condition applied: Valid per year")
-        print("2. Additional Offers: \n   ")
-        print("Add 500kr and get additional 50kr in your wallet \n  ")
-        print("Add 1000kr and get additional 100kr in your wallet")
+        print("1. Get every 7th coffee free in our shop \n     Condition applied: Valid per year")
+        print("2. Additional Offers:   ")
+        print("    Add 500kr and get additional 50kr in your wallet")
+        print("    Add 1000kr and get additional 100kr in your wallet")
 

@@ -24,6 +24,24 @@ class consumeCoffeeApi:
         coffeeDetail = req.post(self.coffeeAp, json = {'COFFEE_NAME' : cName, 'COFFEE_DESCRIPTION': description, 'COFFEE_PRICE': price})
         return coffeeDetail.json()
 
+    def updateCoffeeDetails(self, id, field, value):
+        coffeeDetails = self.getSpecificCoffeeDetail(id)
+        deletedcoffee = self.deleteCoffeeDetail(id)
+        if deletedcoffee:
+            if field == 'price':
+                response =  req.post(self.coffeeAp, json={'COFFEE_ID': coffeeDetails['COFFEE_ID'], 'COFFEE_NAME':coffeeDetails['COFFEE_NAME'] , 'COFFEE_DESCRIPTION': coffeeDetails['COFFEE_DESCRIPTION'], 'COFFEE_PRICE': value})
+            elif field == 'description':
+                response =  req.post(self.coffeeAp, json={'COFFEE_ID': coffeeDetails['COFFEE_ID'], 'COFFEE_NAME':coffeeDetails['COFFEE_NAME'] , 'COFFEE_DESCRIPTION': value, 'COFFEE_PRICE': coffeeDetails['COFFEE_PRICE']})
+            else:
+                response =  req.post(self.coffeeAp, json={'COFFEE_ID': coffeeDetails['COFFEE_ID'], 'COFFEE_NAME':coffeeDetails['COFFEE_NAME'] , 'COFFEE_DESCRIPTION': coffeeDetails['COFFEE_DESCRIPTION'], 'COFFEE_PRICE': coffeeDetails['COFFEE_PRICE']})
+        
+            if response is not NULL:
+                return True
+            else:
+                return False
+        else:
+            return False
+
     def getSpecificCoffeeDetail(self, id):
         coffeeDetail = req.get(self.coffeeAp + "/" + str(id))
         return coffeeDetail.json()
@@ -51,10 +69,15 @@ class consumeCoffeeApi:
 
     def postCustomerDetails(self):
         fname = input("Enter First Name and press enter : ")
+        print("First Name: ", fname)
         lname = input("Enter Last Name and press enter : ")
+        print("Last Name: ", lname)
         email = input("Enter EMail and press enter : ")
+        print("EMail: ", email)
         pwd = input("Enter 8 digit Password and press enter : ")
+        print("Password: ", pwd)
         credit = float(input("Enter Credit and press enter : "))
+        print("Credit: ", credit)
         customer_id = randrange(000000, 999999)
         customerDetails = req.post(self.customerApi, json = {'CUSTOMER_ID':customer_id,'FIRST_NAME': fname, 'LAST_NAME': lname, 'CUSTOMER_EMAIL': email, 'PWD':pwd, 'CREDIT': credit})
         return customerDetails.json()
@@ -80,7 +103,7 @@ class consumeCoffeeApi:
                 else:
                     response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': customerDetails['CREDIT']})
             else:
-                response = NULL
+                response = req.post(self.updatecustomerApi, json={'CUSTOMER_ID': customerDetails['CUSTOMER_ID'], 'FIRST_NAME': customerDetails['FIRST_NAME'], 'LAST_NAME': customerDetails['LAST_NAME'], 'CUSTOMER_EMAIL': customerDetails['CUSTOMER_EMAIL'], 'PWD': customerDetails['PWD'], 'CREDIT': customerDetails['CREDIT']})
 
             if response is not NULL:
                 return True

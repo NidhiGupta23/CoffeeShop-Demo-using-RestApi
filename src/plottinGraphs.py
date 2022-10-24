@@ -1,3 +1,4 @@
+from numpy import rollaxis
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -25,6 +26,8 @@ class plottinGraphs:
    def viewPopularCoffee(self, column1):       
       sns.set(style="whitegrid")
       sns.countplot(x=column1, data=self.df.loc[(self.df['MONTH']==dt.datetime.now().month) & (self.df['YEAR']==dt.datetime.now().year)]) 
+      plt.xticks(rotation=45)
+      plt.ylabel('COFFEE_COUNT')
       plt.title('Populare coffees of the MONTH')
       plt.show()
 
@@ -44,13 +47,18 @@ class plottinGraphs:
 
    def bonusCoffee(self, column1, user):
       trimData = self.df.loc[(self.df[column1]==user) & (self.df['YEAR']==dt.datetime.now().year)]
-      '''print("trim Data")      print(trimData)'''
-      if (len(trimData.value_counts())+1) % 7 == 0 :
-         setBonus = True
-         print("Your coffee is on the house")
-      else:
-         setBonus = False
-         print("Order few more for bonus coffee")
+      '''print("trim Data")       print(trimData)'''
+      setBonus = False
+      try:
+         if (len(trimData.value_counts())+1) % 7 == 0 :
+            setBonus = True
+            print("Your coffee is on the house")
+         else:
+            setBonus = False
+            print("Order "+ 7-(len(trimData.value_counts())+1) % 7 + " more for bonus coffee")
+      except:
+         print("Facing issue with fetching data")
+      
       return setBonus
 
    

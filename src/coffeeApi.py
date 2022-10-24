@@ -59,6 +59,10 @@ class ShopData(db.Model):
     def __repr__(self):
         return f'{self.FIRST_NAME}  {self.CREDIT}  {self.DATE}'
 
+# details = {}
+# for prop in propList:
+#     details[prop] = getattr(costomer, propLis[0])
+
 # Starting page of the server
 @app.route('/')
 def index():

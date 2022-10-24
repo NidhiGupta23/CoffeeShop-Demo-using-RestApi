@@ -21,12 +21,13 @@ def count_order():
 count_order.counter = 0
 
 def chooseOption():
-    useService = input('Press 1 to use our services or any other number to exit from our application  ')
-    if useService == '1':
+    useService = input('Press any key for Main Menu or * key to exit from our application  ')
+    if useService != '*':
         option = True
     else:
         option = False
     return option
+
 
 
 if __name__ == "__main__":
@@ -37,40 +38,26 @@ if __name__ == "__main__":
     print('                                  Your presence is our motivation to do better!\n\n') 
     option=chooseOption()
     while(option == True):
-        c1 = order.coffeeOrder()
-        service = c1.viewMainMenu()
-        if int(service) >= 1  and int(service) <= 10:
-            completed = c1.actionToPerforme(service)
-            if int(service) == 2 and completed == True:
-                print("\nOrder ID : ", count_order()) 
-            elif completed == True:
-                print("Have a good day :) ")
+        try:
+            c1 = order.coffeeOrder()
+            service = c1.viewMainMenu()
+            if service == '*':
+                exit()
             else:
-                print("\nSomething went wrong... TRY AGAIN...")
-        else:
-            print("\nLooks like you choosed wrong option!!!\n")
+                completed = c1.actionToPerforme(service)
+                if int(service) == 2 and completed == True:
+                    print("\nOrder ID : ", count_order()) 
+                elif completed == True:
+                    print("Have a good day :) ")
+                else:
+                    print("\nLooks like services can not be fetched!!!\n")
 
-        print("\n\nHi, welcome back!!! It is good to see you back :)")
-        option=chooseOption()
-        del c1
+            print("\n\nHi, welcome back!!! It is good to see you back :)")
+            option=chooseOption()
+            if option == False:
+                del c1
+        
 
-
-    #admin = input("Are you admin ? ")
-    #if admin == "True":
-    #    pp.pprint(customer)
-    #else:
-    #    print("you are not authorised....")
-    '''status = c1.take_order()
-        if status == True:
-            if drink == "yes":
-                print("Order ID : ", count_order())        
-        else:
-            print("Try again !!!")
-        drink = input("Do you want to order coffee ? Press yes or no :   ")
-        del c1
-
-    updateDetails = input("Do you want to update your details ? Press yes or no :   ")                                                
-    if updateDetails == "yes":
-        c1 = order.coffeeOrder()
-        c1.updateMenu()
-    '''
+        except ValueError:
+            print("Choose from 1 to 10 only...")
+            
