@@ -28,7 +28,7 @@ class plottinGraphs:
       sns.countplot(x=column1, data=self.df.loc[(self.df['MONTH']==dt.datetime.now().month) & (self.df['YEAR']==dt.datetime.now().year)]) 
       plt.xticks(rotation=45)
       plt.ylabel('COFFEE_COUNT')
-      plt.title('Populare coffees of the MONTH')
+      plt.title('Popular coffees of the MONTH')
       plt.show()
 
 
@@ -37,6 +37,7 @@ class plottinGraphs:
       sns.set(style="whitegrid")
       if column2 == 'CoffeeOrder':
          plot1 =  sns.countplot(x=self.df['CUSTOMER_ID'],data=self.df['YEAR']==dt.datetime.now().year)
+         plt.xticks(rotation=45)
          plt.title('Customers vs Coffee ordered')
          plt.show() 
       elif column2 == 'Credit':
@@ -52,10 +53,12 @@ class plottinGraphs:
       try:
          if (len(trimData.value_counts())+1) % 7 == 0 :
             setBonus = True
-            print("Your coffee is on the house")
+            print("-----------------------------------------------------")
+            print("|             Your coffee is on the house           |")         
+            print("-----------------------------------------------------")
          else:
             setBonus = False
-            print("Order "+ 7-(len(trimData.value_counts())+1) % 7 + " more for bonus coffee")
+            print("\nOrder ", 7-((len(trimData.value_counts())+1) % 7), " more for bonus coffee")
       except:
          print("Facing issue with fetching data")
       
@@ -70,6 +73,7 @@ class plottinGraphs:
          self.customerdf.loc[i] = [self.customerAll[i]['CUSTOMER_ID'], self.customerAll[i]['FIRST_NAME'], self.customerAll[i]['LAST_NAME'],  self.customerAll[i]['CUSTOMER_EMAIL'], self.customerAll[i]['PWD'], self.customerAll[i]['CREDIT']]
  
       plot1 =  sns.barplot(x=self.customerdf['CUSTOMER_ID'], y=self.customerdf['CREDIT'] , data=self.customerdf)
+      plt.xticks(rotation=45)
       plt.title('Customers vs Credit')
       plt.show()
 

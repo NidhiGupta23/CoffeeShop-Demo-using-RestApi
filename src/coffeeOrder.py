@@ -28,7 +28,7 @@ class coffeeOrder:
     # select coffee type
     def selectCoffee(self):        
         try:
-            coffeeType = int(input("\nHave you choosed your desired coffee? If yes, press the id number :   "))
+            coffeeType = int(input("\nChoose your desired coffee ID:   "))
             #print("You selected coffee")
             self.event['COFFEE_NAME'] = self.coffee.get('coffee')[coffeeType-1].get('COFFEE_NAME')
             print("\nYou selected coffee", self.event['COFFEE_NAME'])
@@ -205,6 +205,9 @@ class coffeeOrder:
     def viewCredits(self):
         view = input("Press 1 to see your remaining balance or  press any other number to exit from the system  ")
         if view == '1':
+            if (self.plotGraph.bonusCoffee('CUSTOMER_EMAIL', self.event['CUSTOMER_EMAIL'])):
+                self.event['COFFEE_PRICE'] = 0.0
+                
             print("\nYour coffee bill was: ", self.event['COFFEE_PRICE'])
             print("Remaining balance: ", self.event['CREDIT'])
         
@@ -413,6 +416,7 @@ class coffeeOrder:
 
     def subActionPerform9(self):
         choice = True
+
         while choice==True:
             print("\nSub Menu")
             print("1. View customer vs credit graph")
@@ -449,7 +453,9 @@ class coffeeOrder:
 
             else:
                 break
-            choice = input('Do you still want to perform any operation(True/False) ')
+            choice = input('Do you still want to perform any operation(y/n) ')
+            if choice.lower() == 'y' or choice.lower() == 'yes':
+                choice = True
 
 
     def actionPerform10(self):

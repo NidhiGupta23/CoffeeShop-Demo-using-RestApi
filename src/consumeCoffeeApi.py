@@ -68,7 +68,8 @@ class consumeCoffeeApi:
         return customerDetails.json()
 
     def postCustomerDetails(self):
-        fname = input("Enter First Name and press enter : ")
+            
+        fname = input("Enter First Name and press enter  ")
         print("First Name: ", fname)
         lname = input("Enter Last Name and press enter : ")
         print("Last Name: ", lname)
@@ -77,7 +78,8 @@ class consumeCoffeeApi:
         pwd = input("Enter 8 digit Password and press enter : ")
         print("Password: ", pwd)
         credit = float(input("Enter Credit and press enter : "))
-        print("Credit: ", credit)
+        print("Credit: ", credit)      
+
         customer_id = randrange(000000, 999999)
         customerDetails = req.post(self.customerApi, json = {'CUSTOMER_ID':customer_id,'FIRST_NAME': fname, 'LAST_NAME': lname, 'CUSTOMER_EMAIL': email, 'PWD':pwd, 'CREDIT': credit})
         return customerDetails.json()
