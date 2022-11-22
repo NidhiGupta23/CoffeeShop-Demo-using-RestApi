@@ -47,31 +47,34 @@ class coffeeOrder:
 
     # For existing users to login
     def login(self):
-        cemail = input("Enter email address :  ")
-        self.getCustomerIndex(cemail)
         status=False
-        if self.event['CUSTOMER_ID'] == 0:
-            print("Enter correct email ID")
-            exit
-        else:
-            cpwd = input("Enter the password :  ")
-            status = self.checkPwd(cpwd) 
-            '''print("Status after checking pwd  ",status)  print("Status after else  ",status)'''
+        try:
+            cemail = input("Enter email address :  ")
+            self.getCustomerIndex(cemail)
+            if self.event['CUSTOMER_ID'] == 0:
+                print("Enter correct email ID")
+                exit
+            else:
+                cpwd = input("Enter the password :  ")
+                status = self.checkPwd(cpwd) 
+                '''print("Status after checking pwd  ",status)  print("Status after else  ",status)'''
+        except KeyError:
+            print("Entered wrong email...")
+
         return status
 
 
     # Get the id of the customer using email provided
     def getCustomerIndex(self, cemail):
-        try:
-            for index in range(len(self.customer.get('Customers'))):
-                if cemail == self.customer.get('Customers')[index].get('CUSTOMER_EMAIL'):
+        for index in range(len(self.customer.get('Customers'))):
+            if cemail == self.customer.get('Customers')[index].get('CUSTOMER_EMAIL'):
                    # print("After getting the :  ", index)                     
                    # print( self.customer.get('Customers')[index])
-                    self.event['cusIndex'] = index
-                    self.event['CUSTOMER_ID'] = self.customer.get('Customers')[index].get('CUSTOMER_ID')
-                    break            
-        except:
-            print("Not the correct Email ID entered")
+                self.event['cusIndex'] = index
+                self.event['CUSTOMER_ID'] = self.customer.get('Customers')[index].get('CUSTOMER_ID')
+                break 
+
+
 
     # Check for customer authentication using password 
     def checkPwd(self, cpwd):
@@ -394,7 +397,7 @@ class coffeeOrder:
         if loginStatus == True:
             msg = self.cs.deleteCustomerDetail(self.event['CUSTOMER_ID'])
             if msg is not None:
-                print(msg)
+                print("Account deleted successfully")
                 status = True
         else:
             print("Wrong email or password.")

@@ -59,9 +59,6 @@ class ShopData(db.Model):
     def __repr__(self):
         return f'{self.FIRST_NAME}  {self.CREDIT}  {self.DATE}'
 
-# details = {}
-# for prop in propList:
-#     details[prop] = getattr(costomer, propLis[0])
 
 # Starting page of the server
 @app.route('/')
@@ -69,65 +66,6 @@ def index():
     db.create_all()
     return ('Welcome here to our coffee shop')
 
-#######################################################################################################################
-                     ########## IMPLEMENTING REST API FOR PRODUCT CUSTOMER ##########
-
-# Get all customers details - GET METHOD
-@app.route('/customerDetails', methods=['GET'])
-def get_customerDetails():
-    customers = CustomersData.query.all()
-    output = []
-    for customer in customers:
-        details = {'CUSTOMER_ID': customer.CUSTOMER_ID, 'FIRST_NAME': customer.FIRST_NAME, 'LAST_NAME': customer.LAST_NAME, 'CUSTOMER_EMAIL': customer.CUSTOMER_EMAIL, 'PWD': customer.PWD, 'CREDIT': customer.CREDIT}
-        output.append(details)    
-    return {"Customers" : output}
-
-# Add new customer into the database - POST METHOD
-@app.route('/customerDetails', methods=['POST'])
-def add_customerDetails():    
-    customer = CustomersData(CUSTOMER_ID=request.json['CUSTOMER_ID'], FIRST_NAME=request.json['FIRST_NAME'], LAST_NAME=request.json['LAST_NAME'], CUSTOMER_EMAIL=request.json['CUSTOMER_EMAIL'], PWD=request.json['PWD'], CREDIT=request.json['CREDIT'])
-    db.session.add(customer)
-    db.session.commit()
-    return {'CUSTOMER_ID': customer.CUSTOMER_ID}
-
-# since put method is not supported in html so we will convert it into POST method
-# update particular customer details - PUT METHOD
-@app.route('/customerDetails/update', methods=['POST'])
-def update_customerDetails():
-    customer = CustomersData(CUSTOMER_ID=request.json['CUSTOMER_ID'], FIRST_NAME=request.json['FIRST_NAME'], LAST_NAME=request.json['LAST_NAME'], CUSTOMER_EMAIL=request.json['CUSTOMER_EMAIL'], PWD=request.json['PWD'], CREDIT=request.json['CREDIT'])
-    
-    db.session.add(customer)
-    db.session.commit()
-    return {'CUSTOMER_ID': customer.CUSTOMER_ID}
-
-
-# update particular customer details - PUT METHOD
-@app.route('/customerDetails/<id>', methods=['PUT'])
-def update_customerDetail(id):
-    customer = CustomersData.query.get(id)
-    customer['FIRST_NAME'] = request.json['FIRST_NAME']
-    customer['LAST_NAME'] = request.json['LAST_NAME']
-    customer['CUSTOMER_EMAIL'] = request.json['CUSTOMER_EMAIL']
-    customer['PWD'] = request.json['PWD']
-    customer['CREDIT'] = request.json['CREDIT']
-    db.session.commit()
-    return {'CUSTOMER_ID': customer['CUSTOMER_ID'], 'FIRST_NAME': customer['FIRST_NAME'], 'LAST_NAME': customer['LAST_NAME'], 'CUSTOMER_EMAIL': customer['CUSTOMER_EMAIL'], 'CREDIT': customer['CREDIT']}
-
-# delete a particular customer - DELETE METHOD
-@app.route('/customerDetails/<id>', methods=['DELETE'])
-def delete_customerDetail(id):
-    customer = CustomersData.query.get(id)    
-    if customer is None:
-        return {'error': 'customer does not exists'}
-    db.session.delete(customer)
-    db.session.commit()
-    return {'message': 'deletion successful'}
-
-# display details of specific customer
-@app.route('/customerDetails/<id>')
-def get_customDetail(id):
-    customer = CustomersData.query.get_or_404(id)
-    return {'CUSTOMER_ID': customer.CUSTOMER_ID, 'FIRST_NAME': customer.FIRST_NAME, 'LAST_NAME': customer.LAST_NAME, 'CUSTOMER_EMAIL': customer.CUSTOMER_EMAIL, 'PWD': customer.PWD, 'CREDIT': customer.CREDIT}
 
 #######################################################################################################################
                        ########## IMPLEMENTING REST API FOR PRODUCT COFFEE ##########
@@ -150,6 +88,7 @@ def add_coffeeDetails():
     db.session.commit()
     return {'COFFEE_ID': coffeeD.COFFEE_ID}
 
+# since put method is not supported in html so we will convert it into POST method
 # update the details of particular coffee - PUT METHOD
 @app.route('/coffeeDetails/update', methods=['POST'])
 def update_coffeeDetail():
@@ -173,6 +112,72 @@ def delete_coffeeDetail(id):
 def get_coffeeDetail(id):
     coffeeD = CoffeeDetails.query.get_or_404(id)
     return {'COFFEE_ID': coffeeD.COFFEE_ID, 'COFFEE_NAME': coffeeD.COFFEE_NAME, 'COFFEE_DESCRIPTION': coffeeD.COFFEE_DESCRIPTION, 'COFFEE_PRICE': coffeeD.COFFEE_PRICE}
+
+
+
+#######################################################################################################################
+                     ########## IMPLEMENTING REST API FOR PRODUCT CUSTOMER ##########
+
+# Get all customers details - GET METHOD
+@app.route('/customerDetails', methods=['GET'])
+def get_customerDetails():
+    customers = CustomersData.query.all()
+    output = []
+    for customer in customers:
+        details = {'CUSTOMER_ID': customer.CUSTOMER_ID, 'FIRST_NAME': customer.FIRST_NAME, 'LAST_NAME': customer.LAST_NAME, 
+                   'CUSTOMER_EMAIL': customer.CUSTOMER_EMAIL, 'PWD': customer.PWD, 'CREDIT': customer.CREDIT}
+        output.append(details)    
+    return {"Customers" : output}
+
+# Add new customer into the database - POST METHOD
+@app.route('/customerDetails', methods=['POST'])
+def add_customerDetails():    
+    customer = CustomersData(CUSTOMER_ID=request.json['CUSTOMER_ID'], FIRST_NAME=request.json['FIRST_NAME'], LAST_NAME=request.json['LAST_NAME'], 
+                             CUSTOMER_EMAIL=request.json['CUSTOMER_EMAIL'], PWD=request.json['PWD'], CREDIT=request.json['CREDIT'])
+    db.session.add(customer)
+    db.session.commit()
+    return {'CUSTOMER_ID': customer.CUSTOMER_ID}
+
+# since put method is not supported in html so we will convert it into POST method
+# update particular customer details - PUT METHOD
+@app.route('/customerDetails/update', methods=['POST'])
+def update_customerDetails():
+    customer = CustomersData(CUSTOMER_ID=request.json['CUSTOMER_ID'], FIRST_NAME=request.json['FIRST_NAME'], LAST_NAME=request.json['LAST_NAME'], 
+               CUSTOMER_EMAIL=request.json['CUSTOMER_EMAIL'], PWD=request.json['PWD'], CREDIT=request.json['CREDIT'])
+    
+    db.session.add(customer)
+    db.session.commit()
+    return {'CUSTOMER_ID': customer.CUSTOMER_ID}
+
+
+# update particular customer details - PUT METHOD
+'''@app.route('/customerDetails/<id>', methods=['PUT'])
+def update_customerDetail(id):
+    customer = CustomersData.query.get(id)
+    customer['FIRST_NAME'] = request.json['FIRST_NAME']
+    customer['LAST_NAME'] = request.json['LAST_NAME']
+    customer['CUSTOMER_EMAIL'] = request.json['CUSTOMER_EMAIL']
+    customer['PWD'] = request.json['PWD']
+    customer['CREDIT'] = request.json['CREDIT']
+    db.session.commit()
+    return {'CUSTOMER_ID': customer['CUSTOMER_ID'], 'FIRST_NAME': customer['FIRST_NAME'], 'LAST_NAME': customer['LAST_NAME'], 'CUSTOMER_EMAIL': customer['CUSTOMER_EMAIL'], 'CREDIT': customer['CREDIT']}'''
+
+# delete a particular customer - DELETE METHOD
+@app.route('/customerDetails/<id>', methods=['DELETE'])
+def delete_customerDetail(id):
+    customer = CustomersData.query.get(id)    
+    if customer is None:
+        return {'error': 'customer does not exists'}
+    db.session.delete(customer)
+    db.session.commit()
+    return {'message': 'deletion successful'}
+
+# display details of specific customer
+@app.route('/customerDetails/<id>')
+def get_customDetail(id):
+    customer = CustomersData.query.get_or_404(id)
+    return {'CUSTOMER_ID': customer.CUSTOMER_ID, 'FIRST_NAME': customer.FIRST_NAME, 'LAST_NAME': customer.LAST_NAME, 'CUSTOMER_EMAIL': customer.CUSTOMER_EMAIL, 'PWD': customer.PWD, 'CREDIT': customer.CREDIT}
+
 
 
 #######################################################################################################################

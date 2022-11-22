@@ -39,6 +39,7 @@ class plottinGraphs:
          plot1 =  sns.countplot(x=self.df['CUSTOMER_ID'],data=self.df['YEAR']==dt.datetime.now().year)
          plt.xticks(rotation=45)
          plt.title('Customers vs Coffee ordered')
+         plt.tight_layout()
          plt.show() 
       elif column2 == 'Credit':
          self.customerCredit()

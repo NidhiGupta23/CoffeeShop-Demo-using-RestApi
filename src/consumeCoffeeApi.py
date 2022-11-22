@@ -7,6 +7,7 @@ class consumeCoffeeApi:
     def __init__(self):
         self.customerApi = "http://127.0.0.1:5000/customerDetails"
         self.coffeeAp = "http://127.0.0.1:5000/coffeeDetails"
+        self.updateCoffeeApi = "http://127.0.0.1:5000/coffeeDetails/update"
         self.updatecustomerApi = "http://127.0.0.1:5000/customerDetails/update"
         self.shopApi = "http://127.0.0.1:5000/shopDetails"
         
@@ -29,11 +30,11 @@ class consumeCoffeeApi:
         deletedcoffee = self.deleteCoffeeDetail(id)
         if deletedcoffee:
             if field == 'price':
-                response =  req.post(self.coffeeAp, json={'COFFEE_ID': coffeeDetails['COFFEE_ID'], 'COFFEE_NAME':coffeeDetails['COFFEE_NAME'] , 'COFFEE_DESCRIPTION': coffeeDetails['COFFEE_DESCRIPTION'], 'COFFEE_PRICE': value})
+                response =  req.post(self.updateCoffeeApi, json={'COFFEE_ID': coffeeDetails['COFFEE_ID'], 'COFFEE_NAME':coffeeDetails['COFFEE_NAME'] , 'COFFEE_DESCRIPTION': coffeeDetails['COFFEE_DESCRIPTION'], 'COFFEE_PRICE': value})
             elif field == 'description':
-                response =  req.post(self.coffeeAp, json={'COFFEE_ID': coffeeDetails['COFFEE_ID'], 'COFFEE_NAME':coffeeDetails['COFFEE_NAME'] , 'COFFEE_DESCRIPTION': value, 'COFFEE_PRICE': coffeeDetails['COFFEE_PRICE']})
+                response =  req.post(self.updateCoffeeApi, json={'COFFEE_ID': coffeeDetails['COFFEE_ID'], 'COFFEE_NAME':coffeeDetails['COFFEE_NAME'] , 'COFFEE_DESCRIPTION': value, 'COFFEE_PRICE': coffeeDetails['COFFEE_PRICE']})
             else:
-                response =  req.post(self.coffeeAp, json={'COFFEE_ID': coffeeDetails['COFFEE_ID'], 'COFFEE_NAME':coffeeDetails['COFFEE_NAME'] , 'COFFEE_DESCRIPTION': coffeeDetails['COFFEE_DESCRIPTION'], 'COFFEE_PRICE': coffeeDetails['COFFEE_PRICE']})
+                response =  req.post(self.updateCoffeeApi, json={'COFFEE_ID': coffeeDetails['COFFEE_ID'], 'COFFEE_NAME':coffeeDetails['COFFEE_NAME'] , 'COFFEE_DESCRIPTION': coffeeDetails['COFFEE_DESCRIPTION'], 'COFFEE_PRICE': coffeeDetails['COFFEE_PRICE']})
         
             if response is not NULL:
                 return True
